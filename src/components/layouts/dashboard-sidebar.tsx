@@ -1,10 +1,11 @@
 'use client'
 
 import Link from 'next/link'
+import type { Route } from 'next'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
-const navItems = [
+const navItems: Array<{ href: Route; label: string }> = [
   { href: '/dashboard', label: 'Overview' },
   { href: '/dashboard/portfolio', label: 'ポートフォリオ' },
   { href: '/dashboard/analysis', label: '高度分析' },

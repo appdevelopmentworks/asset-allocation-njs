@@ -1,9 +1,19 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import yahooFinance from 'yahoo-finance2'
 
 const DEFAULT_COUNT = 8
 
-export async function GET(request: Request) {
+type QuoteResult = Record<string, unknown>
+
+type SupportedQuote = QuoteResult & {
+  symbol: string
+}
+
+function isSupportedQuote(quote: QuoteResult): quote is SupportedQuote {
+  return Boolean(quote && typeof quote === 'object' && 'symbol' in quote && typeof quote.symbol === 'string')
+}
+
+export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const query = searchParams.get('query')?.trim()
 
@@ -18,15 +28,19 @@ export async function GET(request: Request) {
       enableFuzzyQuery: true,
     })
 
-    const quotes = (result.quotes ?? []).map((quote) => ({
-      symbol: quote.symbol,
-      shortname: quote.shortname,
-      exchDisp: quote.exchDisp,
-      typeDisp: quote.typeDisp,
-      industry: quote.industry,
-      sector: quote.sector,
-      longname: quote.longname,
-    }))
+    const rawQuotes = Array.isArray(result.quotes) ? (result.quotes as QuoteResult[]) : []
+
+    const quotes = rawQuotes
+      .filter(isSupportedQuote)
+      .map((quote) => ({
+        symbol: quote.symbol,
+        shortname: 'shortname' in quote ? quote.shortname : undefined,
+        exchDisp: 'exchDisp' in quote ? quote.exchDisp : undefined,
+        typeDisp: 'typeDisp' in quote ? quote.typeDisp : undefined,
+        industry: 'industry' in quote ? quote.industry : undefined,
+        sector: 'sector' in quote ? quote.sector : undefined,
+        longname: 'longname' in quote ? quote.longname : undefined,
+      }))
 
     return NextResponse.json({
       query,

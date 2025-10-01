@@ -3,7 +3,9 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   experimental: {
     typedRoutes: true,
-    serverActions: true,
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
   },
   images: {
     remotePatterns: [

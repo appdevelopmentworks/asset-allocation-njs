@@ -1,15 +1,8 @@
 import useSWR from 'swr'
-import type { Prisma } from '@prisma/client'
-
-type PortfolioWithRelations = Prisma.PortfolioGetPayload<{
-  include: {
-    assets: true
-    snapshots: true
-  }
-}>
+import type { Portfolio } from '@/lib/types'
 
 interface PortfolioResponse {
-  portfolios: PortfolioWithRelations[]
+  portfolios: Portfolio[]
 }
 
 const fetcher = async (url: string) => {

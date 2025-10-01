@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { ZodError } from 'zod'
 import {
   deletePortfolio as deletePortfolioService,
@@ -7,14 +7,15 @@ import {
 } from '@/lib/services/portfolio-service'
 import { updatePortfolioSchema } from '@/lib/validations/portfolio'
 
-interface RouteParams {
-  params: {
+interface RouteContext {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
-export async function GET(_request: Request, { params }: RouteParams) {
-  const portfolio = await getPortfolioById(params.id)
+export async function GET(_request: NextRequest, context: RouteContext) {
+  const { id } = await context.params
+  const portfolio = await getPortfolioById(id)
 
   if (!portfolio) {
     return NextResponse.json({ error: 'Portfolio not found' }, { status: 404 })
@@ -23,11 +24,12 @@ export async function GET(_request: Request, { params }: RouteParams) {
   return NextResponse.json({ portfolio })
 }
 
-export async function PATCH(request: Request, { params }: RouteParams) {
+export async function PATCH(request: NextRequest, context: RouteContext) {
+  const { id } = await context.params
   try {
     const body = await request.json()
     const parsed = updatePortfolioSchema.parse(body)
-    const portfolio = await updatePortfolioService(params.id, parsed)
+    const portfolio = await updatePortfolioService(id, parsed)
     return NextResponse.json({ portfolio })
   } catch (error) {
     if (error instanceof ZodError) {
@@ -46,9 +48,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
   }
 }
 
-export async function DELETE(_request: Request, { params }: RouteParams) {
+export async function DELETE(_request: NextRequest, context: RouteContext) {
+  const { id } = await context.params
   try {
-    const portfolio = await deletePortfolioService(params.id)
+    const portfolio = await deletePortfolioService(id)
     return NextResponse.json({ portfolio })
   } catch (error) {
     if (error instanceof Error && error.message.includes('Record to delete does not exist')) {

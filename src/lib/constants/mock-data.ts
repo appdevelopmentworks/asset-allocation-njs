@@ -3,6 +3,8 @@ import type { Portfolio } from '@/lib/types'
 export const mockPortfolio: Portfolio = {
   id: 'portfolio-001',
   name: 'グロース＋コモディティ',
+  description: '株式・債券・コモディティを組み合わせた分散ポートフォリオ',
+  baseCurrency: 'USD',
   createdAt: '2024-12-01T10:00:00.000Z',
   updatedAt: '2024-12-12T09:30:00.000Z',
   settings: {

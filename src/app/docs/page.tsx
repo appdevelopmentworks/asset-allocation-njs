@@ -1,6 +1,11 @@
 import Link from 'next/link'
+import type { Route } from 'next'
 
-const docs = [
+const docs: Array<{
+  href: Route
+  title: string
+  description: string
+}> = [
   {
     href: '/docs/getting-started',
     title: '開発開始手順',

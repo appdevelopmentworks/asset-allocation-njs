@@ -1,12 +1,11 @@
 import { z } from 'zod'
-import type { PortfolioSettings } from '@/lib/types'
 
 export const portfolioSettingsSchema = z.object({
   rebalanceFrequency: z.enum(['monthly', 'quarterly', 'yearly']),
   timeRange: z.enum(['1Y', '3Y', '5Y', '10Y', 'MAX']),
   includeDividends: z.boolean().default(true),
   useLogReturns: z.boolean().default(true),
-}) satisfies z.ZodType<PortfolioSettings>
+})
 
 export const portfolioAssetSchema = z.object({
   symbol: z.string().min(1, 'Symbol is required'),

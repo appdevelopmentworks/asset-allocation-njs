@@ -24,6 +24,7 @@ export interface PortfolioAsset {
   weight: number
   quantity?: number
   value?: number
+  averagePrice?: number
 }
 
 export interface PortfolioSettings {
@@ -33,13 +34,26 @@ export interface PortfolioSettings {
   useLogReturns: boolean
 }
 
+export interface PortfolioSnapshot {
+  id: string
+  strategy: OptimizationStrategy
+  expectedReturn: number
+  risk: number
+  sharpeRatio: number
+  weights: number[]
+  createdAt: string
+}
+
 export interface Portfolio {
   id: string
   name: string
+  description?: string
+  baseCurrency?: string
   assets: PortfolioAsset[]
   createdAt: string
   updatedAt: string
   settings: PortfolioSettings
+  snapshots?: PortfolioSnapshot[]
 }
 
 export interface HistoricalPrice {

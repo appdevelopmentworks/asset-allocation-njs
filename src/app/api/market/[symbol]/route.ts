@@ -1,13 +1,21 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { fetchHistoricalPrices } from '@/lib/api/market'
 
 const DEFAULT_RANGE = '3y'
 const DEFAULT_INTERVAL = '1d'
 
-export async function GET(request: Request, { params }: { params: { symbol: string } }) {
+interface RouteContext {
+  params: Promise<{
+    symbol: string
+  }>
+}
+
+export async function GET(request: NextRequest, context: RouteContext) {
   const { searchParams } = new URL(request.url)
   const range = (searchParams.get('range') as '1y' | '3y' | '5y' | '10y' | 'max') ?? DEFAULT_RANGE
   const interval = (searchParams.get('interval') as '1d' | '1wk' | '1mo') ?? DEFAULT_INTERVAL
+
+  const params = await context.params
 
   if (!params.symbol) {
     return NextResponse.json({ error: 'Symbol is required' }, { status: 400 })

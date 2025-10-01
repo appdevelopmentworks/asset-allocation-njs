@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { useMemo } from 'react'
+import type Plotly from 'plotly.js'
 import type { HistoricalPrice } from '@/lib/types'
 import { useComparisonMarketData, useMarketData } from '@/lib/hooks/use-market-data'
 
@@ -13,7 +14,7 @@ interface PriceTrendChartProps {
   interval?: '1d' | '1wk' | '1mo'
 }
 
-const chartConfig = {
+const chartConfig: Partial<Plotly.Config> = {
   displaylogo: false,
   responsive: true,
   modeBarButtonsToRemove: ['select2d', 'lasso2d'],
@@ -30,7 +31,7 @@ const colorPalette = [
   '#facc15',
 ]
 
-function buildReturnTrace(prices: HistoricalPrice[], label: string, color: string) {
+function buildReturnTrace(prices: HistoricalPrice[], label: string, color: string): Plotly.Data | null {
   if (!prices.length) {
     return null
   }
@@ -55,7 +56,7 @@ function buildReturnTrace(prices: HistoricalPrice[], label: string, color: strin
     x,
     y,
     type: 'scatter' as const,
-    mode: 'lines',
+    mode: 'lines' as const,
     name: label,
     line: {
       color,
@@ -91,17 +92,19 @@ export function PriceTrendChart({ symbols, range = '3y', interval = '1d' }: Pric
   const error = isComparison ? comparisonError : singleError
   const isLoading = isComparison ? comparisonLoading : singleLoading
 
-  const traces = useMemo(() => {
+const traces = useMemo<Plotly.Data[] | null>(() => {
     if (isComparison) {
       if (!comparisonData) {
         return null
       }
 
-      return comparisonData
+      const comparisonTraces = comparisonData
         .map((dataset, index) =>
           buildReturnTrace(dataset.data, dataset.symbol, colorPalette[index % colorPalette.length]),
         )
-        .filter((trace): trace is ReturnTrace => Boolean(trace))
+        .filter((trace): trace is ReturnTrace => trace !== null)
+
+      return comparisonTraces.length ? comparisonTraces : null
     }
 
     if (!singleData || !primarySymbol) {
@@ -139,38 +142,40 @@ export function PriceTrendChart({ symbols, range = '3y', interval = '1d' }: Pric
     )
   }
 
+  const layout: Partial<Plotly.Layout> = {
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    margin: { t: 30, r: 10, b: 40, l: 50 },
+    xaxis: {
+      title: { text: 'Date' },
+      showgrid: false,
+      color: '#64748b',
+    },
+    yaxis: {
+      title: { text: 'Cumulative Return (%)' },
+      color: '#64748b',
+      zeroline: true,
+      zerolinecolor: '#cbd5f5',
+      tickformat: '.0%',
+    },
+    hoverlabel: {
+      bgcolor: '#0f172a',
+      font: { color: '#f8fafc' },
+    },
+    legend: {
+      orientation: 'h',
+      x: 0,
+      y: -0.2,
+      font: { color: '#0f172a' },
+    },
+    hovermode: 'x unified' as const,
+  }
+
   return (
     <Plot
       data={traces}
       style={{ width: '100%', height: '100%' }}
-      layout={{
-        paper_bgcolor: 'rgba(0,0,0,0)',
-        plot_bgcolor: 'rgba(0,0,0,0)',
-        margin: { t: 30, r: 10, b: 40, l: 50 },
-        xaxis: {
-          title: 'Date',
-          showgrid: false,
-          color: '#64748b',
-        },
-        yaxis: {
-          title: 'Cumulative Return (%)',
-          color: '#64748b',
-          zeroline: true,
-          zerolinecolor: '#cbd5f5',
-          tickformat: '.0%',
-        },
-        hoverlabel: {
-          bgcolor: '#0f172a',
-          font: { color: '#f8fafc' },
-        },
-        legend: {
-          orientation: 'h',
-          x: 0,
-          y: -0.2,
-          font: { color: '#0f172a' },
-        },
-        hovermode: 'x unified',
-      }}
+      layout={layout}
       config={chartConfig}
       useResizeHandler
       className="h-60"
