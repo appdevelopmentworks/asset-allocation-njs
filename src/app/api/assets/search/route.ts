@@ -10,7 +10,9 @@ type SupportedQuote = QuoteResult & {
 }
 
 function isSupportedQuote(quote: QuoteResult): quote is SupportedQuote {
-  return Boolean(quote && typeof quote === 'object' && 'symbol' in quote && typeof quote.symbol === 'string')
+  return Boolean(
+    quote && typeof quote === 'object' && 'symbol' in quote && typeof quote.symbol === 'string',
+  )
 }
 
 export async function GET(request: NextRequest) {
@@ -30,17 +32,15 @@ export async function GET(request: NextRequest) {
 
     const rawQuotes = Array.isArray(result.quotes) ? (result.quotes as QuoteResult[]) : []
 
-    const quotes = rawQuotes
-      .filter(isSupportedQuote)
-      .map((quote) => ({
-        symbol: quote.symbol,
-        shortname: 'shortname' in quote ? quote.shortname : undefined,
-        exchDisp: 'exchDisp' in quote ? quote.exchDisp : undefined,
-        typeDisp: 'typeDisp' in quote ? quote.typeDisp : undefined,
-        industry: 'industry' in quote ? quote.industry : undefined,
-        sector: 'sector' in quote ? quote.sector : undefined,
-        longname: 'longname' in quote ? quote.longname : undefined,
-      }))
+    const quotes = rawQuotes.filter(isSupportedQuote).map((quote) => ({
+      symbol: quote.symbol,
+      shortname: 'shortname' in quote ? quote.shortname : undefined,
+      exchDisp: 'exchDisp' in quote ? quote.exchDisp : undefined,
+      typeDisp: 'typeDisp' in quote ? quote.typeDisp : undefined,
+      industry: 'industry' in quote ? quote.industry : undefined,
+      sector: 'sector' in quote ? quote.sector : undefined,
+      longname: 'longname' in quote ? quote.longname : undefined,
+    }))
 
     return NextResponse.json({
       query,

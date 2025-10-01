@@ -31,7 +31,11 @@ const colorPalette = [
   '#facc15',
 ]
 
-function buildReturnTrace(prices: HistoricalPrice[], label: string, color: string): Plotly.Data | null {
+function buildReturnTrace(
+  prices: HistoricalPrice[],
+  label: string,
+  color: string,
+): Plotly.Data | null {
   if (!prices.length) {
     return null
   }
@@ -92,7 +96,7 @@ export function PriceTrendChart({ symbols, range = '3y', interval = '1d' }: Pric
   const error = isComparison ? comparisonError : singleError
   const isLoading = isComparison ? comparisonLoading : singleLoading
 
-const traces = useMemo<Plotly.Data[] | null>(() => {
+  const traces = useMemo<Plotly.Data[] | null>(() => {
     if (isComparison) {
       if (!comparisonData) {
         return null
