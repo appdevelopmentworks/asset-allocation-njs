@@ -1,8 +1,9 @@
 import useSWR from 'swr'
-import type { OptimizationSummary, OptimizationStrategy } from '@/lib/types'
+import type { OptimizationSummary, OptimizationStrategy, Portfolio } from '@/lib/types'
 
 interface UseOptimizationOptions {
   strategy?: OptimizationStrategy
+  portfolio?: Portfolio
 }
 
 interface OptimizationResponse {
@@ -10,8 +11,18 @@ interface OptimizationResponse {
   summary?: OptimizationSummary
 }
 
-const fetcher = async (url: string) => {
-  const response = await fetch(url, { headers: { 'Content-Type': 'application/json' } })
+type OptimizationKey =
+  | ['optimization', 'GET', OptimizationStrategy | undefined]
+  | ['optimization', 'POST', OptimizationStrategy | undefined, Portfolio]
+
+const fetcher = async (key: OptimizationKey) => {
+  const [, method, strategy, portfolio] = key
+  const search = strategy ? `?strategy=${strategy}` : ''
+  const response = await fetch(`/api/optimization${search}`, {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: method === 'POST' ? JSON.stringify({ strategy, portfolio }) : undefined,
+  })
 
   if (!response.ok) {
     throw new Error('Failed to fetch optimization summaries')
@@ -20,13 +31,19 @@ const fetcher = async (url: string) => {
   return (await response.json()) as OptimizationResponse
 }
 
-export function useOptimization({ strategy }: UseOptimizationOptions = {}) {
-  const key = strategy ? `/api/optimization?strategy=${strategy}` : '/api/optimization'
+export function useOptimization({ strategy, portfolio }: UseOptimizationOptions = {}) {
+  const key = (portfolio
+    ? (['optimization', 'POST', strategy, portfolio] as const)
+    : (['optimization', 'GET', strategy] as const)) satisfies OptimizationKey
 
-  const { data, error, isLoading, mutate } = useSWR<OptimizationResponse>(key, fetcher, {
-    revalidateOnFocus: false,
-    dedupingInterval: 1000 * 60 * 10,
-  })
+  const { data, error, isLoading, mutate } = useSWR<OptimizationResponse, Error, OptimizationKey>(
+    key,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 1000 * 60 * 10,
+    },
+  )
 
   return {
     summaries: data?.summaries,

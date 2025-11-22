@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { mockPortfolio } from '@/lib/constants/mock-data'
 import { readJSON, removeItem, writeJSON } from '@/lib/storage/local-storage'
 import type { Portfolio, SimulationSettings } from '@/lib/types'
+import { isPortfolioLike, normalizePortfolio, type PortfolioLike } from '@/lib/utils/portfolio'
 
 const PORTFOLIO_KEY = 'asset-allocation:portfolio'
 const SIMULATION_KEY = 'asset-allocation:simulation'
@@ -26,41 +27,20 @@ interface PortfolioContextValue {
 
 const PortfolioContext = createContext<PortfolioContextValue | null>(null)
 
-const generateId = () => {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return crypto.randomUUID()
-  }
-  return `asset-${Math.random().toString(36).slice(2)}`
-}
-
-function sanitizePortfolio(input: Portfolio): Portfolio {
-  return {
-    ...input,
-    assets: input.assets.map((item) => ({
-      ...item,
-      asset: {
-        ...item.asset,
-        id: item.asset.id || generateId(),
-        symbol: item.asset.symbol.toUpperCase(),
-        name: item.asset.name || item.asset.symbol.toUpperCase(),
-      },
-      weight: Number(item.weight.toFixed(6)),
-    })),
-    createdAt: input.createdAt,
-    updatedAt: input.updatedAt,
-  }
-}
-
 export function PortfolioProvider({ children }: { children: React.ReactNode }) {
   const [portfolio, setPortfolio] = useState<Portfolio>(mockPortfolio)
   const [simulation, setSimulationState] = useState<SimulationSettings>(defaultSimulation)
 
   useEffect(() => {
-    const storedPortfolio = readJSON<Portfolio | null>(PORTFOLIO_KEY, null)
+    const storedPortfolio = readJSON<PortfolioLike | null>(PORTFOLIO_KEY, null)
     const storedSimulation = readJSON<SimulationSettings | null>(SIMULATION_KEY, null)
 
-    if (storedPortfolio) {
-      setPortfolio(sanitizePortfolio(storedPortfolio))
+    if (storedPortfolio && isPortfolioLike(storedPortfolio)) {
+      try {
+        setPortfolio(normalizePortfolio(storedPortfolio))
+      } catch (error) {
+        console.warn('[portfolio] Failed to normalize stored portfolio', error)
+      }
     }
 
     if (storedSimulation) {
@@ -96,7 +76,7 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
       portfolio,
       updatePortfolio: (updater) => {
         setPortfolio((current) => {
-          const next = sanitizePortfolio(updater(current))
+          const next = normalizePortfolio(updater(current))
           return {
             ...next,
             updatedAt: new Date().toISOString(),
@@ -105,7 +85,7 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
       },
       replacePortfolio: (next) => {
         setPortfolio({
-          ...sanitizePortfolio(next),
+          ...normalizePortfolio(next),
           updatedAt: new Date().toISOString(),
         })
       },

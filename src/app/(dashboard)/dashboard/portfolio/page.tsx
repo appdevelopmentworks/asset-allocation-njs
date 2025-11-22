@@ -45,7 +45,10 @@ export default function PortfolioPage() {
   const { locale } = useLocale()
   const { portfolio, replacePortfolio, resetPortfolio, simulation, setSimulation } = usePortfolio()
   const [selectedStrategy, setSelectedStrategy] = useState<OptimizationStrategy>('max_sharpe')
-  const { summaries, summary, isLoading, error } = useOptimization({ strategy: selectedStrategy })
+  const { summaries, summary, isLoading, error } = useOptimization({
+    strategy: selectedStrategy,
+    portfolio,
+  })
 
   const optimizationSummaries = summaries ?? mockOptimizationSummaries
 
@@ -60,6 +63,39 @@ export default function PortfolioPage() {
     if (summary) return summary
     return optimizationSummaries.find((item) => item.strategy === selectedStrategy)
   }, [optimizationSummaries, selectedStrategy, summary])
+
+  const isUsingOptimizedAllocation = Boolean(selectedSummary?.weights?.length)
+
+  const symbolLookup = useMemo(
+    () => new Map(portfolio.assets.map((item) => [item.asset.symbol, item.asset])),
+    [portfolio.assets],
+  )
+
+  const displayedAllocations = useMemo(
+    () => {
+      if (selectedSummary?.weights?.length) {
+        return selectedSummary.weights.map((entry) => {
+          const asset = symbolLookup.get(entry.symbol)
+          return {
+            symbol: entry.symbol,
+            name: entry.name ?? asset?.name ?? entry.symbol,
+            weight: entry.weight,
+            value: portfolioValue * entry.weight,
+            asset,
+          }
+        })
+      }
+
+      return portfolio.assets.map(({ asset, weight, value }) => ({
+        symbol: asset.symbol,
+        name: asset.name,
+        weight,
+        value: value ?? weight * portfolioValue,
+        asset,
+      }))
+    },
+    [portfolio.assets, portfolioValue, selectedSummary?.weights, symbolLookup],
+  )
 
   const optimizationFooterNote = isLoading
     ? locale === 'ja'
@@ -150,7 +186,13 @@ export default function PortfolioPage() {
 
       <SectionCard
         title="資産配分"
-        description="Yahoo Finance から取得した価格データを元に、最適化アルゴリズムで算出された配分比率を表示します。"
+        description={
+          isUsingOptimizedAllocation
+            ? `${
+                strategyOptions.find((option) => option.value === selectedStrategy)?.label ?? '最適化'
+              } の推奨配分です。`
+            : '現在のポートフォリオに保存されている配分です。'
+        }
       >
         <div className="overflow-hidden rounded-lg border">
           <table className="min-w-full divide-y divide-border text-sm">
@@ -167,13 +209,17 @@ export default function PortfolioPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border bg-card/60">
-              {portfolio.assets.map(({ asset, weight, value }) => (
-                <tr key={asset.id} className="transition hover:bg-muted/40">
-                  <td className="px-4 py-3 font-semibold">{asset.symbol}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{asset.name}</td>
-                  <td className="px-4 py-3 text-right font-medium">{(weight * 100).toFixed(1)}%</td>
+              {displayedAllocations.map((allocation) => (
+                <tr key={allocation.symbol} className="transition hover:bg-muted/40">
+                  <td className="px-4 py-3 font-semibold">{allocation.symbol}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{allocation.name}</td>
+                  <td className="px-4 py-3 text-right font-medium">
+                    {(allocation.weight * 100).toFixed(1)}%
+                  </td>
                   <td className="px-4 py-3 text-right text-muted-foreground">
-                    {value ? value.toLocaleString('en-US', { maximumFractionDigits: 0 }) : '—'}
+                    {allocation.value
+                      ? allocation.value.toLocaleString('en-US', { maximumFractionDigits: 0 })
+                      : '—'}
                   </td>
                 </tr>
               ))}
@@ -181,7 +227,12 @@ export default function PortfolioPage() {
           </table>
         </div>
         <div className="mt-6 h-72">
-          <AllocationPieChart assets={portfolio.assets} />
+          <AllocationPieChart
+            assets={displayedAllocations.map((item) => ({
+              weight: item.weight,
+              asset: item.asset ?? { symbol: item.symbol },
+            }))}
+          />
         </div>
       </SectionCard>
 
