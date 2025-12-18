@@ -1,4 +1,5 @@
 import useSWR from 'swr'
+import type { OptimizationSummaryResponse } from '@/lib/services/optimization-service'
 import type { OptimizationSummary, OptimizationStrategy, Portfolio } from '@/lib/types'
 
 interface UseOptimizationOptions {
@@ -9,6 +10,7 @@ interface UseOptimizationOptions {
 interface OptimizationResponse {
   summaries?: OptimizationSummary[]
   summary?: OptimizationSummary
+  meta?: OptimizationSummaryResponse['meta']
 }
 
 type OptimizationKey =
@@ -48,6 +50,7 @@ export function useOptimization({ strategy, portfolio }: UseOptimizationOptions 
   return {
     summaries: data?.summaries,
     summary: data?.summary,
+    meta: data?.meta,
     isLoading,
     error,
     refresh: mutate,

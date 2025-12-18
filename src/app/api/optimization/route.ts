@@ -38,13 +38,18 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Invalid strategy' }, { status: 400 })
   }
 
-  const result = getOptimizationSummaries(strategyParam)
+  try {
+    const result = await getOptimizationSummaries(strategyParam)
 
-  if (strategyParam && !result.summary) {
-    return NextResponse.json({ error: 'Strategy not found' }, { status: 404 })
+    if (strategyParam && !result.summary) {
+      return NextResponse.json({ error: 'Strategy not found' }, { status: 404 })
+    }
+
+    return NextResponse.json(result)
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to compute optimization'
+    return NextResponse.json({ error: message }, { status: 502 })
   }
-
-  return NextResponse.json(result)
 }
 
 interface OptimizationRequestPayload {
@@ -61,7 +66,7 @@ export async function POST(request: Request) {
     }
 
     const portfolio = resolvePortfolio(payload.portfolio)
-    const result = getOptimizationSummaries(strategy, portfolio)
+    const result = await getOptimizationSummaries(strategy, portfolio)
 
     if (strategy && !result.summary) {
       return NextResponse.json({ error: 'Strategy not found' }, { status: 404 })
@@ -70,6 +75,7 @@ export async function POST(request: Request) {
     return NextResponse.json(result)
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Invalid payload'
-    return NextResponse.json({ error: message }, { status: 400 })
+    const status = message.includes('compute optimization') ? 502 : 400
+    return NextResponse.json({ error: message }, { status })
   }
 }

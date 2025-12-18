@@ -182,6 +182,13 @@ export const mockOptimizationSummaries = [
     sharpeRatio: 1.42,
     description:
       'リスクに対するリターン効率を最大化。株式とコモディティのバランスが最適化されました。',
+    weights: [
+      { symbol: 'VOO', weight: 0.38 },
+      { symbol: 'VXUS', weight: 0.18 },
+      { symbol: 'GLD', weight: 0.12 },
+      { symbol: 'BND', weight: 0.17 },
+      { symbol: 'BTC-USD', weight: 0.15 },
+    ],
   },
   {
     strategy: 'min_variance' as const,
@@ -189,6 +196,13 @@ export const mockOptimizationSummaries = [
     risk: 0.052,
     sharpeRatio: 1.18,
     description: '安定性重視の低ボラティリティ構成。債券と金の比率を増やし、防御力を高めています。',
+    weights: [
+      { symbol: 'VOO', weight: 0.22 },
+      { symbol: 'VXUS', weight: 0.12 },
+      { symbol: 'GLD', weight: 0.28 },
+      { symbol: 'BND', weight: 0.32 },
+      { symbol: 'BTC-USD', weight: 0.06 },
+    ],
   },
   {
     strategy: 'max_return' as const,
@@ -197,6 +211,13 @@ export const mockOptimizationSummaries = [
     sharpeRatio: 1.34,
     description:
       '期待リターン最大化。暗号資産と株式の比率が高く、ハイリスク・ハイリターン戦略です。',
+    weights: [
+      { symbol: 'VOO', weight: 0.42 },
+      { symbol: 'VXUS', weight: 0.16 },
+      { symbol: 'GLD', weight: 0.09 },
+      { symbol: 'BND', weight: 0.08 },
+      { symbol: 'BTC-USD', weight: 0.25 },
+    ],
   },
   {
     strategy: 'risk_parity' as const,

@@ -82,6 +82,11 @@ export interface OptimizationSummary {
   risk: number
   sharpeRatio: number
   description?: string
+  weights?: Array<{
+    symbol: string
+    name?: string
+    weight: number
+  }>
 }
 
 export interface PerformanceSnapshot {

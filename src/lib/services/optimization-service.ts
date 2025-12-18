@@ -5,10 +5,18 @@ import {
   optimizeRiskParity,
 } from '@/lib/calculations/optimization'
 import { mockPortfolio } from '@/lib/constants/mock-data'
+import {
+  createCachedMarketDataProvider,
+  createSyntheticMarketDataProvider,
+  generateSyntheticReturns,
+  type MarketDataMeta,
+  type MarketDataProvider,
+} from '@/lib/services/market-data-service'
 import type {
   OptimizationStrategy,
   OptimizationSummary,
   Portfolio,
+  TimeRange,
 } from '@/lib/types'
 
 interface StrategyDefinition {
@@ -47,27 +55,79 @@ const STRATEGIES: StrategyDefinition[] = [
 ]
 
 const MONTHS = 120
+const RANGE_TO_MONTHS: Record<TimeRange, number> = {
+  '1Y': 12,
+  '3Y': 36,
+  '5Y': 60,
+  '10Y': 120,
+  MAX: MONTHS,
+}
+const DEFAULT_RANGE: TimeRange = '5Y'
+const defaultMarketDataProvider = createCachedMarketDataProvider(createSyntheticMarketDataProvider())
 
 export interface OptimizationSummaryResponse {
   summaries: OptimizationSummary[]
   summary?: OptimizationSummary
+  meta: MarketDataMeta
 }
 
-export function getOptimizationSummaries(
+export interface GetOptimizationOptions {
+  marketDataProvider?: MarketDataProvider
+  range?: TimeRange
+}
+
+export async function getOptimizationSummaries(
   strategy?: OptimizationStrategy,
   portfolio: Portfolio = mockPortfolio,
-): OptimizationSummaryResponse {
-  const assets = portfolio.assets
-  if (!assets.length) {
-    return { summaries: [] }
+  options: GetOptimizationOptions = {},
+): Promise<OptimizationSummaryResponse> {
+  const assets = portfolio?.assets ?? []
+  const symbols = assets.map((asset) => asset.asset.symbol).filter(Boolean)
+  const range = options.range ?? portfolio.settings?.timeRange ?? DEFAULT_RANGE
+  const provider = options.marketDataProvider ?? defaultMarketDataProvider
+  const months = RANGE_TO_MONTHS[range] ?? MONTHS
+
+  if (!symbols.length) {
+    return {
+      summaries: [],
+      meta: {
+        source: 'synthetic',
+        fromCache: false,
+        range,
+      },
+    }
   }
 
-  const returnMatrix = assets.map((asset) => generateSyntheticReturns(asset.asset.symbol))
-  const meanVector = returnMatrix.map((series) => average(series))
-  const covariance = covarianceMatrix(returnMatrix)
+  let result: Awaited<ReturnType<MarketDataProvider['getReturns']>>
+
+  try {
+    result = await provider.getReturns({ symbols, range })
+  } catch (error) {
+    if (provider !== defaultMarketDataProvider) {
+      result = await defaultMarketDataProvider.getReturns({ symbols, range })
+    } else {
+      throw error
+    }
+  }
+
+  const returnMatrix = symbols.map(
+    (symbol) => result.returns[symbol] ?? generateSyntheticReturns(symbol, months),
+  )
+
+  const hasMissingSeries = returnMatrix.some((series) => !series.length)
+  const normalized = returnMatrix.map((series) =>
+    series.length ? series : generateFallbackSeries(months),
+  )
+  const meanVector = normalized.map((series) => average(series))
+  const covariance = covarianceMatrix(normalized)
+  const meta: MarketDataMeta = {
+    ...result.meta,
+    source: hasMissingSeries ? 'synthetic' : result.meta.source,
+    range,
+  }
 
   const summaries = STRATEGIES.map((definition) => {
-    const weights = definition.optimizer(returnMatrix, { minWeight: 0.05, maxWeight: 0.6 })
+    const weights = definition.optimizer(normalized, { minWeight: 0.05, maxWeight: 0.6 })
     const stats = calculateStats(weights, meanVector, covariance)
 
     return {
@@ -85,46 +145,16 @@ export function getOptimizationSummaries(
   })
 
   if (!strategy) {
-    return { summaries }
+    return {
+      summaries,
+      meta,
+    }
   }
 
   return {
     summaries,
     summary: summaries.find((item) => item.strategy === strategy),
-  }
-}
-
-function generateSyntheticReturns(symbol: string, months = MONTHS) {
-  const random = mulberry32(hashString(symbol))
-  const series: number[] = []
-  let drift = (random() - 0.5) * 0.02
-
-  for (let index = 0; index < months; index += 1) {
-    const shock = (random() - 0.5) * 0.04
-    const value = 0.006 + drift + shock
-    series.push(value)
-    drift *= 0.98
-  }
-
-  return series
-}
-
-function hashString(value: string) {
-  let hash = 0
-  for (let index = 0; index < value.length; index += 1) {
-    hash = (hash << 5) - hash + value.charCodeAt(index)
-    hash |= 0
-  }
-  return Math.abs(hash) || 1
-}
-
-function mulberry32(seed: number) {
-  return function () {
-    seed |= 0
-    seed = (seed + 0x6d2b79f5) | 0
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed)
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+    meta,
   }
 }
 
@@ -164,6 +194,10 @@ function calculateStats(weights: number[], meanVector: number[], covariance: num
   const risk = Math.sqrt(Math.max(0, quadraticForm(weights, covariance)))
   const sharpeRatio = risk ? expectedReturn / risk : 0
   return { expectedReturn, risk, sharpeRatio }
+}
+
+function generateFallbackSeries(length = MONTHS) {
+  return Array.from({ length }, () => 0.005)
 }
 
 function quadraticForm(weights: number[], matrix: number[][]) {

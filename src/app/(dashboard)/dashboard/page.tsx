@@ -23,6 +23,9 @@ const rangeOptions: Array<{ value: RangeValue; label: string }> = [
   { value: 'max', label: '最大' },
 ]
 
+const glassPanel =
+  'relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/60 via-slate-900/50 to-slate-800/50 shadow-xl shadow-black/30 backdrop-blur supports-[backdrop-filter]:backdrop-blur-md'
+
 export default function DashboardHomePage() {
   const { t, locale } = useLocale()
   const { portfolio } = usePortfolio()
@@ -218,7 +221,9 @@ export default function DashboardHomePage() {
   const comparisonEmptyText = t('dashboard.price.comparisonEmpty')
 
   return (
-    <div className="space-y-8">
+    <div className="relative space-y-8 overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_15%_20%,rgba(56,189,248,0.12),transparent_30%),radial-gradient(circle_at_85%_10%,rgba(236,72,153,0.1),transparent_28%),radial-gradient(circle_at_40%_80%,rgba(94,234,212,0.12),transparent_28%)]" />
+      <div className="pointer-events-none absolute inset-0 -z-20 bg-gradient-to-b from-slate-950 via-slate-950/92 to-slate-950/80" />
       <header className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="space-y-2">
           <h1 className="text-3xl font-semibold">{t('dashboard.overview.title')}</h1>
@@ -306,10 +311,13 @@ export default function DashboardHomePage() {
         ) : null}
       </header>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {metrics.map((metric) => (
-          <MetricCard key={`${metric.title}-${selectedAsset}`} {...metric} />
-        ))}
+      <div className={`${glassPanel} p-4`}>
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_10%,rgba(255,255,255,0.08),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(255,255,255,0.05),transparent_30%)]" />
+        <div className="relative grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {metrics.map((metric) => (
+            <MetricCard key={`${metric.title}-${selectedAsset}`} {...metric} />
+          ))}
+        </div>
       </div>
 
       <SectionCard

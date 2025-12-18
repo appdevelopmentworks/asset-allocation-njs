@@ -26,34 +26,100 @@ const highlights = [
   'Supabase・Redisと連携した堅牢なバックエンド基盤',
 ]
 
+const glassCard =
+  'rounded-2xl border border-white/10 bg-white/5 shadow-xl shadow-black/10 backdrop-blur supports-[backdrop-filter]:backdrop-blur-md'
+
+const heroFocuses = [
+  {
+    title: 'ポートフォリオ情報',
+    description: '資産配分や通貨を一元管理し、ローカルストレージで安全に保持します。',
+  },
+  {
+    title: 'シミュレーション設定',
+    description: '期間・回数・リバランス頻度を揃え、再現性のあるバックテストを即時実行。',
+  },
+]
+
 export default function LandingPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-background via-background to-muted">
       <section className="relative isolate overflow-hidden px-6 py-20 sm:py-24 lg:px-8">
-        <div className="mx-auto max-w-4xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-primary">
-            Asset Allocation Tool
-          </p>
-          <h1 className="mt-6 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-            リアルタイムデータで最適なポートフォリオ戦略をデザイン
-          </h1>
-          <p className="mt-6 text-lg leading-8 text-muted-foreground">
-            モダンな投資家のために設計されたNext.jsアプリケーション。効率的フロンティア、
-            モンテカルロシミュレーション、リスク分析を一つのダッシュボードで提供します。
-          </p>
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/dashboard"
-              className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90"
-            >
-              ダッシュボードを見る
-            </Link>
-            <Link
-              href="/docs/getting-started"
-              className="text-sm font-semibold text-foreground underline-offset-4 transition hover:underline"
-            >
-              ドキュメントを確認
-            </Link>
+        <div className="absolute inset-x-16 top-[-10rem] h-64 rotate-12 rounded-full bg-primary/15 blur-3xl" />
+        <div className="absolute inset-x-4 bottom-[-8rem] h-52 -rotate-6 rounded-full bg-primary/10 blur-3xl" />
+        <div className="mx-auto max-w-6xl">
+          <div className={`relative overflow-hidden ${glassCard} p-8 lg:p-12 ring-1 ring-white/10`}>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.12),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(16,185,129,0.12),transparent_30%)]" />
+            <div className="relative grid gap-10 lg:grid-cols-[1.2fr,0.9fr]">
+              <div className="space-y-6">
+                <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-primary ring-1 ring-primary/20">
+                  <span>Asset Allocation Tool</span>
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
+                  <span>Next.js 15</span>
+                </div>
+                <div className="space-y-4">
+                  <h1 className="text-balance text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+                    リアルタイムデータで最適なポートフォリオ戦略をデザイン
+                  </h1>
+                  <p className="text-balance text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
+                    モダンな投資家のために設計されたNext.jsアプリケーション。効率的フロンティア、
+                    モンテカルロシミュレーション、リスク分析を一つのダッシュボードで提供します。
+                  </p>
+                </div>
+                <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
+                  <Link
+                    href="/dashboard"
+                    className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+                  >
+                    ダッシュボードを見る
+                  </Link>
+                  <Link
+                    href="/docs/getting-started"
+                    className="inline-flex items-center justify-center rounded-lg border border-primary/40 bg-background/60 px-6 py-3 text-sm font-semibold text-foreground shadow-sm transition hover:border-primary/80 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+                  >
+                    ドキュメントを確認
+                  </Link>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {heroFocuses.map((item) => (
+                    <div
+                      key={item.title}
+                      className={`${glassCard} rounded-xl p-4`}
+                    >
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        {item.title}
+                      </p>
+                      <p className="mt-2 text-sm text-muted-foreground">{item.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className={`${glassCard} space-y-4 p-6 shadow-inner`}>
+                <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                  開発ハイライト
+                </p>
+                <ul className="space-y-3 text-sm text-muted-foreground">
+                  {highlights.map((item) => (
+                    <li
+                      key={item}
+                      className={`${glassCard} flex items-start gap-3 rounded-lg border-white/5 bg-white/5 px-3 py-2 shadow-sm`}
+                    >
+                      <span className="mt-1 h-2 w-2 rounded-full bg-primary" aria-hidden />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="grid grid-cols-2 gap-3 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <div className={`${glassCard} rounded-lg border-white/10 bg-white/5 p-3 text-foreground shadow-sm`}>
+                    リアルタイムデータ
+                    <p className="mt-1 text-sm font-semibold text-primary">即時反映</p>
+                  </div>
+                  <div className={`${glassCard} rounded-lg border-white/10 bg-white/5 p-3 text-foreground shadow-sm`}>
+                    シミュレーション
+                    <p className="mt-1 text-sm font-semibold text-primary">1000+回</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -69,7 +135,7 @@ export default function LandingPage() {
               {features.map((feature) => (
                 <div
                   key={feature.title}
-                  className="rounded-xl border bg-card p-6 shadow-sm transition hover:shadow"
+                  className={`${glassCard} rounded-xl border-white/10 bg-white/5 p-6 transition hover:shadow-lg`}
                 >
                   <dt className="text-base font-semibold text-foreground">{feature.title}</dt>
                   <dd className="mt-2 text-sm text-muted-foreground">{feature.description}</dd>
@@ -77,7 +143,7 @@ export default function LandingPage() {
               ))}
             </dl>
           </div>
-          <aside className="rounded-2xl border bg-card p-6 shadow-sm">
+          <aside className={`${glassCard} p-6`}>
             <h3 className="text-lg font-semibold text-foreground">開発ハイライト</h3>
             <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
               {highlights.map((item) => (
@@ -126,7 +192,7 @@ export default function LandingPage() {
           </div>
           <div>
             <h2 className="text-2xl font-semibold tracking-tight">次のアクション</h2>
-            <div className="mt-6 space-y-5 rounded-2xl border bg-background p-6 shadow-sm">
+            <div className={`${glassCard} mt-6 space-y-5 p-6`}>
               <div>
                 <p className="text-sm font-semibold text-foreground">環境変数テンプレートを作成</p>
                 <p className="mt-2 text-sm text-muted-foreground">
