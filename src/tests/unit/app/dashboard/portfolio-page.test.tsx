@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor, within } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import PortfolioPage from '@/app/(dashboard)/dashboard/portfolio/page'
 import { LocaleProvider } from '@/components/providers/locale-provider'
@@ -63,7 +63,10 @@ describe('PortfolioPage optimization integration', () => {
         let portfolioPayload: Portfolio | undefined
 
         if (init?.body && typeof init.body === 'string') {
-          const parsed = JSON.parse(init.body) as { strategy?: OptimizationStrategy; portfolio?: Portfolio }
+          const parsed = JSON.parse(init.body) as {
+            strategy?: OptimizationStrategy
+            portfolio?: Portfolio
+          }
           bodyStrategy = parsed.strategy ?? undefined
           if (parsed.portfolio) {
             portfolioPayload = normalizePortfolio(parsed.portfolio)

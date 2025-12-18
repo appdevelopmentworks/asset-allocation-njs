@@ -12,12 +12,7 @@ import {
   type MarketDataMeta,
   type MarketDataProvider,
 } from '@/lib/services/market-data-service'
-import type {
-  OptimizationStrategy,
-  OptimizationSummary,
-  Portfolio,
-  TimeRange,
-} from '@/lib/types'
+import type { OptimizationStrategy, OptimizationSummary, Portfolio, TimeRange } from '@/lib/types'
 
 interface StrategyDefinition {
   strategy: OptimizationStrategy
@@ -63,7 +58,9 @@ const RANGE_TO_MONTHS: Record<TimeRange, number> = {
   MAX: MONTHS,
 }
 const DEFAULT_RANGE: TimeRange = '5Y'
-const defaultMarketDataProvider = createCachedMarketDataProvider(createSyntheticMarketDataProvider())
+const defaultMarketDataProvider = createCachedMarketDataProvider(
+  createSyntheticMarketDataProvider(),
+)
 
 export interface OptimizationSummaryResponse {
   summaries: OptimizationSummary[]

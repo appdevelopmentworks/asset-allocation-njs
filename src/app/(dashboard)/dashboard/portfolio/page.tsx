@@ -74,31 +74,28 @@ export default function PortfolioPage() {
     [portfolio.assets],
   )
 
-  const displayedAllocations = useMemo(
-    () => {
-      if (selectedSummary?.weights?.length) {
-        return selectedSummary.weights.map((entry) => {
-          const asset = symbolLookup.get(entry.symbol)
-          return {
-            symbol: entry.symbol,
-            name: entry.name ?? asset?.name ?? entry.symbol,
-            weight: entry.weight,
-            value: portfolioValue * entry.weight,
-            asset,
-          }
-        })
-      }
+  const displayedAllocations = useMemo(() => {
+    if (selectedSummary?.weights?.length) {
+      return selectedSummary.weights.map((entry) => {
+        const asset = symbolLookup.get(entry.symbol)
+        return {
+          symbol: entry.symbol,
+          name: ('name' in entry ? entry.name : undefined) ?? asset?.name ?? entry.symbol,
+          weight: entry.weight,
+          value: portfolioValue * entry.weight,
+          asset,
+        }
+      })
+    }
 
-      return portfolio.assets.map(({ asset, weight, value }) => ({
-        symbol: asset.symbol,
-        name: asset.name,
-        weight,
-        value: value ?? weight * portfolioValue,
-        asset,
-      }))
-    },
-    [portfolio.assets, portfolioValue, selectedSummary?.weights, symbolLookup],
-  )
+    return portfolio.assets.map(({ asset, weight, value }) => ({
+      symbol: asset.symbol,
+      name: asset.name,
+      weight,
+      value: value ?? weight * portfolioValue,
+      asset,
+    }))
+  }, [portfolio.assets, portfolioValue, selectedSummary?.weights, symbolLookup])
 
   const statusMessage = useMemo(() => {
     if (isLoading) {
@@ -179,9 +176,7 @@ export default function PortfolioPage() {
             <h1 className="text-3xl font-semibold leading-tight md:text-4xl">{portfolio.name}</h1>
             <p className="max-w-2xl text-sm text-slate-200/80">
               ポートフォリオは{' '}
-              {new Date(portfolio.updatedAt).toLocaleString(
-                locale === 'ja' ? 'ja-JP' : 'en-US',
-              )}{' '}
+              {new Date(portfolio.updatedAt).toLocaleString(locale === 'ja' ? 'ja-JP' : 'en-US')}{' '}
               に最終更新されました。 ローカルストレージに保存される個人向け設定を表示しています。
             </p>
             <div className="flex flex-wrap gap-2">
@@ -199,7 +194,9 @@ export default function PortfolioPage() {
               </span>
             </div>
           </div>
-          <div className={`${glassPanel} flex items-center gap-3 px-4 py-3 text-xs text-slate-100 shadow-inner`}>
+          <div
+            className={`${glassPanel} flex items-center gap-3 px-4 py-3 text-xs text-slate-100 shadow-inner`}
+          >
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-lg font-semibold text-white shadow-md">
               {selectedSummary ? (selectedSummary.sharpeRatio ?? 0).toFixed(2) : '--'}
             </div>
@@ -208,7 +205,8 @@ export default function PortfolioPage() {
                 Sharpe Ratio
               </p>
               <p className="text-sm font-semibold text-white">
-                {(selectedSummary?.expectedReturn ?? mockPerformanceMetrics.expectedReturn) * 100 >= 0
+                {(selectedSummary?.expectedReturn ?? mockPerformanceMetrics.expectedReturn) * 100 >=
+                0
                   ? '+'
                   : ''}
                 {(
@@ -281,7 +279,8 @@ export default function PortfolioPage() {
         description={
           isUsingOptimizedAllocation
             ? `${
-                strategyOptions.find((option) => option.value === selectedStrategy)?.label ?? '最適化'
+                strategyOptions.find((option) => option.value === selectedStrategy)?.label ??
+                '最適化'
               } の推奨配分です。`
             : '現在のポートフォリオに保存されている配分です。'
         }

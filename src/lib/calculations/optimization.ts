@@ -243,9 +243,7 @@ export function calculateEfficientFrontier(
     const start = anchors[startIndex]
     const end = anchors[endIndex]
 
-    let blended = start.weights.map(
-      (weight, i) => weight * (1 - localT) + end.weights[i] * localT,
-    )
+    let blended = start.weights.map((weight, i) => weight * (1 - localT) + end.weights[i] * localT)
     blended = applyConstraints(blended, constraints)
 
     const stats = calculatePortfolioStats(blended, meanVector, covMatrix)
@@ -271,11 +269,7 @@ export function calculateEfficientFrontier(
   return sorted
 }
 
-function calculatePortfolioStats(
-  weights: number[],
-  meanVector: number[],
-  covMatrix: number[][],
-) {
+function calculatePortfolioStats(weights: number[], meanVector: number[], covMatrix: number[][]) {
   const portfolioReturn = weights.reduce((sum, weight, i) => sum + weight * meanVector[i], 0)
   const portfolioRisk = Math.sqrt(Math.max(0, quadraticForm(weights, covMatrix)))
   return { return: portfolioReturn, risk: portfolioRisk }

@@ -13,7 +13,11 @@ let GET: typeof import('@/app/api/optimization/route').GET
 let POST: typeof import('@/app/api/optimization/route').POST
 
 beforeAll(async () => {
-  const { Request: NodeRequest, Response: NodeResponse, Headers: NodeHeaders } = await import('undici')
+  const {
+    Request: NodeRequest,
+    Response: NodeResponse,
+    Headers: NodeHeaders,
+  } = await import('undici')
 
   if (typeof globalThis.Request === 'undefined') {
     globalThis.Request = NodeRequest as typeof Request
@@ -47,7 +51,9 @@ describe('/api/optimization route', () => {
     )
     expect(response.status).toBe(200)
 
-    const body = (await response.json()) as { summary?: { strategy: OptimizationStrategy; weights?: unknown[] } }
+    const body = (await response.json()) as {
+      summary?: { strategy: OptimizationStrategy; weights?: unknown[] }
+    }
     expect(body.summary?.strategy).toBe(strategy)
     expect(body.summary?.weights).toHaveLength(mockPortfolio.assets.length)
   })

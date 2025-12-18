@@ -55,9 +55,36 @@ describe('Portfolio calculations', () => {
 
   it('calculates expected annual return from price history', () => {
     const prices: HistoricalPrice[] = [
-      { symbol: 'AAA', date: '2024-01-01', open: 100, high: 100, low: 100, close: 100, adjClose: 100, volume: 0 },
-      { symbol: 'AAA', date: '2024-01-02', open: 101, high: 101, low: 101, close: 101, adjClose: 101, volume: 0 },
-      { symbol: 'AAA', date: '2024-01-03', open: 102.5, high: 102.5, low: 102.5, close: 102.5, adjClose: 102.5, volume: 0 },
+      {
+        symbol: 'AAA',
+        date: '2024-01-01',
+        open: 100,
+        high: 100,
+        low: 100,
+        close: 100,
+        adjClose: 100,
+        volume: 0,
+      },
+      {
+        symbol: 'AAA',
+        date: '2024-01-02',
+        open: 101,
+        high: 101,
+        low: 101,
+        close: 101,
+        adjClose: 101,
+        volume: 0,
+      },
+      {
+        symbol: 'AAA',
+        date: '2024-01-03',
+        open: 102.5,
+        high: 102.5,
+        low: 102.5,
+        close: 102.5,
+        adjClose: 102.5,
+        volume: 0,
+      },
     ]
 
     expect(calculateExpectedReturn(prices)).toBeCloseTo(3.1113, 4)

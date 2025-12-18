@@ -61,8 +61,7 @@ export function calculateVolatility(
     return 0
   }
 
-  const variance =
-    valid.reduce((sum, value) => sum + (value - mean) ** 2, 0) / denominator
+  const variance = valid.reduce((sum, value) => sum + (value - mean) ** 2, 0) / denominator
 
   if (!isFiniteNumber(variance) || variance <= 0) {
     return 0
@@ -184,8 +183,7 @@ export function calculateCorrelation(seriesA: number[], seriesB: number[]): numb
   const meanB = average(valuesB)
 
   const covariance =
-    pairs.reduce((sum, [a, b]) => sum + (a - meanA) * (b - meanB), 0) /
-    (pairs.length - 1)
+    pairs.reduce((sum, [a, b]) => sum + (a - meanA) * (b - meanB), 0) / (pairs.length - 1)
   const stdA = Math.sqrt(
     valuesA.reduce((sum, value) => sum + (value - meanA) ** 2, 0) / (pairs.length - 1),
   )

@@ -34,9 +34,11 @@ const fetcher = async (key: OptimizationKey) => {
 }
 
 export function useOptimization({ strategy, portfolio }: UseOptimizationOptions = {}) {
-  const key = (portfolio
-    ? (['optimization', 'POST', strategy, portfolio] as const)
-    : (['optimization', 'GET', strategy] as const)) satisfies OptimizationKey
+  const key = (
+    portfolio
+      ? (['optimization', 'POST', strategy, portfolio] as const)
+      : (['optimization', 'GET', strategy] as const)
+  ) satisfies OptimizationKey
 
   const { data, error, isLoading, mutate } = useSWR<OptimizationResponse, Error, OptimizationKey>(
     key,

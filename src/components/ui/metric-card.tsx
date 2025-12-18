@@ -20,22 +20,22 @@ export function MetricCard({ title, value, change, className }: MetricCardProps)
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.08),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(255,255,255,0.05),transparent_30%)]" />
       <div className="relative space-y-3">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">{title}</p>
-      <div className="mt-3 flex items-baseline gap-2 text-white">
-        <span className="text-2xl font-semibold">{value}</span>
-        {change && (
-          <span
-            className={cn(
-              'text-xs font-semibold',
-              change.trend === 'up' && 'text-emerald-300',
-              change.trend === 'down' && 'text-rose-300',
-              change.trend === 'neutral' && 'text-slate-300',
-            )}
-          >
-            {change.value}
-          </span>
-        )}
-      </div>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">{title}</p>
+        <div className="mt-3 flex items-baseline gap-2 text-white">
+          <span className="text-2xl font-semibold">{value}</span>
+          {change && (
+            <span
+              className={cn(
+                'text-xs font-semibold',
+                change.trend === 'up' && 'text-emerald-300',
+                change.trend === 'down' && 'text-rose-300',
+                change.trend === 'neutral' && 'text-slate-300',
+              )}
+            >
+              {change.value}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   )
