@@ -1,12 +1,6 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  experimental: {
-    typedRoutes: true,
-    serverActions: {
-      bodySizeLimit: '2mb',
-    },
-  },
   images: {
     remotePatterns: [
       {
@@ -18,12 +12,6 @@ const nextConfig: NextConfig = {
         hostname: 'assets.assetallocation.com',
       },
     ],
-  },
-  eslint: {
-    dirs: ['src'],
-  },
-  typescript: {
-    ignoreBuildErrors: false,
   },
 }
 
