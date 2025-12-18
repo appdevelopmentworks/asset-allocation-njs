@@ -3,6 +3,7 @@
 ## 1. API概要
 
 ### 1.1 基本情報
+
 - **Base URL**: `https://api.assetallocation.app/v1`
 - **Protocol**: HTTPS only
 - **Format**: JSON
@@ -12,6 +13,7 @@
 ### 1.2 共通仕様
 
 #### Request Headers
+
 ```http
 Content-Type: application/json
 Accept: application/json
@@ -21,6 +23,7 @@ Authorization: Bearer {token} (将来実装)
 ```
 
 #### Response Headers
+
 ```http
 Content-Type: application/json
 X-Request-ID: {uuid}
@@ -31,6 +34,7 @@ Cache-Control: private, max-age=60
 ```
 
 #### Success Response
+
 ```json
 {
   "success": true,
@@ -47,6 +51,7 @@ Cache-Control: private, max-age=60
 ```
 
 #### Error Response
+
 ```json
 {
   "success": false,
@@ -67,6 +72,7 @@ Cache-Control: private, max-age=60
 ## 2. Assets API
 
 ### 2.1 資産検索
+
 **Endpoint**: `GET /api/assets/search`
 
 **Description**: 資産を検索する
@@ -81,6 +87,7 @@ Cache-Control: private, max-age=60
 | offset | integer | No | オフセット | `0` |
 
 **Response Example**:
+
 ```json
 {
   "success": true,
@@ -107,6 +114,7 @@ Cache-Control: private, max-age=60
 ```
 
 ### 2.2 資産詳細取得
+
 **Endpoint**: `GET /api/assets/{symbol}`
 
 **Description**: 特定の資産の詳細情報を取得
@@ -117,6 +125,7 @@ Cache-Control: private, max-age=60
 | symbol | string | ティッカーシンボル | `AAPL` |
 
 **Response Example**:
+
 ```json
 {
   "success": true,
@@ -136,9 +145,9 @@ Cache-Control: private, max-age=60
     "dayChangePercent": 1.59,
     "volume": 75000000,
     "avgVolume": 65000000,
-    "previousClose": 147.90,
-    "dayHigh": 151.50,
-    "dayLow": 148.20,
+    "previousClose": 147.9,
+    "dayHigh": 151.5,
+    "dayLow": 148.2,
     "yearHigh": 199.62,
     "yearLow": 124.17,
     "pe": 28.5,
@@ -152,6 +161,7 @@ Cache-Control: private, max-age=60
 ```
 
 ### 2.3 履歴データ取得
+
 **Endpoint**: `GET /api/assets/{symbol}/history`
 
 **Description**: 資産の価格履歴を取得
@@ -169,6 +179,7 @@ Cache-Control: private, max-age=60
 | interval | string | No | データ間隔 | `1d` |
 
 **Interval Values**:
+
 - `1m`: 1分
 - `5m`: 5分
 - `15m`: 15分
@@ -179,6 +190,7 @@ Cache-Control: private, max-age=60
 - `1mo`: 1ヶ月
 
 **Response Example**:
+
 ```json
 {
   "success": true,
@@ -189,20 +201,20 @@ Cache-Control: private, max-age=60
     "history": [
       {
         "date": "2023-01-01",
-        "open": 145.50,
-        "high": 147.20,
-        "low": 144.80,
+        "open": 145.5,
+        "high": 147.2,
+        "low": 144.8,
         "close": 146.75,
         "adjClose": 146.75,
         "volume": 68000000
       },
       {
         "date": "2023-01-02",
-        "open": 146.80,
-        "high": 148.50,
-        "low": 146.20,
-        "close": 148.00,
-        "adjClose": 148.00,
+        "open": 146.8,
+        "high": 148.5,
+        "low": 146.2,
+        "close": 148.0,
+        "adjClose": 148.0,
         "volume": 72000000
       }
     ],
@@ -212,11 +224,13 @@ Cache-Control: private, max-age=60
 ```
 
 ### 2.4 バッチ資産取得
+
 **Endpoint**: `POST /api/assets/batch`
 
 **Description**: 複数の資産情報を一括取得
 
 **Request Body**:
+
 ```json
 {
   "symbols": ["AAPL", "GOOGL", "MSFT"],
@@ -225,6 +239,7 @@ Cache-Control: private, max-age=60
 ```
 
 **Response Example**:
+
 ```json
 {
   "success": true,
@@ -238,8 +253,8 @@ Cache-Control: private, max-age=60
       },
       {
         "symbol": "GOOGL",
-        "price": 140.50,
-        "change": -1.20,
+        "price": 140.5,
+        "change": -1.2,
         "volume": 25000000
       },
       {
@@ -256,11 +271,13 @@ Cache-Control: private, max-age=60
 ## 3. Portfolio API
 
 ### 3.1 ポートフォリオ最適化
+
 **Endpoint**: `POST /api/portfolio/optimize`
 
 **Description**: ポートフォリオの最適化を実行
 
 **Request Body**:
+
 ```json
 {
   "assets": ["AAPL", "GOOGL", "MSFT", "BND", "GLD"],
@@ -269,7 +286,7 @@ Cache-Control: private, max-age=60
   "optimizationType": "max_sharpe",
   "constraints": {
     "minWeight": 0.05,
-    "maxWeight": 0.40,
+    "maxWeight": 0.4,
     "targetReturn": null,
     "maxRisk": null
   },
@@ -282,6 +299,7 @@ Cache-Control: private, max-age=60
 ```
 
 **Optimization Types**:
+
 - `max_sharpe`: シャープレシオ最大化
 - `min_variance`: 分散最小化
 - `max_return`: リターン最大化
@@ -289,6 +307,7 @@ Cache-Control: private, max-age=60
 - `equal_weight`: 均等配分
 
 **Response Example**:
+
 ```json
 {
   "success": true,
@@ -303,7 +322,7 @@ Cache-Control: private, max-age=60
         },
         {
           "symbol": "GOOGL",
-          "weight": 0.20,
+          "weight": 0.2,
           "value": 2000
         },
         {
@@ -313,12 +332,12 @@ Cache-Control: private, max-age=60
         },
         {
           "symbol": "BND",
-          "weight": 0.20,
+          "weight": 0.2,
           "value": 2000
         },
         {
           "symbol": "GLD",
-          "weight": 0.10,
+          "weight": 0.1,
           "value": 1000
         }
       ],
@@ -339,19 +358,21 @@ Cache-Control: private, max-age=60
 ```
 
 ### 3.2 ポートフォリオ分析
+
 **Endpoint**: `POST /api/portfolio/analyze`
 
 **Description**: ポートフォリオの詳細分析を実行
 
 **Request Body**:
+
 ```json
 {
   "portfolio": {
     "assets": [
-      {"symbol": "AAPL", "weight": 0.30},
-      {"symbol": "GOOGL", "weight": 0.25},
-      {"symbol": "MSFT", "weight": 0.25},
-      {"symbol": "BND", "weight": 0.20}
+      { "symbol": "AAPL", "weight": 0.3 },
+      { "symbol": "GOOGL", "weight": 0.25 },
+      { "symbol": "MSFT", "weight": 0.25 },
+      { "symbol": "BND", "weight": 0.2 }
     ]
   },
   "startDate": "2023-01-01",
@@ -366,6 +387,7 @@ Cache-Control: private, max-age=60
 ```
 
 **Response Example**:
+
 ```json
 {
   "success": true,
@@ -384,42 +406,44 @@ Cache-Control: private, max-age=60
       "informationRatio": 0.452
     },
     "correlationMatrix": [
-      [1.00, 0.75, 0.82, -0.15],
-      [0.75, 1.00, 0.68, -0.22],
-      [0.82, 0.68, 1.00, -0.18],
-      [-0.15, -0.22, -0.18, 1.00]
+      [1.0, 0.75, 0.82, -0.15],
+      [0.75, 1.0, 0.68, -0.22],
+      [0.82, 0.68, 1.0, -0.18],
+      [-0.15, -0.22, -0.18, 1.0]
     ],
     "efficientFrontier": [
-      {"risk": 0.08, "return": 0.05},
-      {"risk": 0.10, "return": 0.08},
-      {"risk": 0.12, "return": 0.11},
-      {"risk": 0.15, "return": 0.14},
-      {"risk": 0.18, "return": 0.17}
+      { "risk": 0.08, "return": 0.05 },
+      { "risk": 0.1, "return": 0.08 },
+      { "risk": 0.12, "return": 0.11 },
+      { "risk": 0.15, "return": 0.14 },
+      { "risk": 0.18, "return": 0.17 }
     ],
     "periodReturns": {
       "daily": 0.00068,
       "weekly": 0.00342,
       "monthly": 0.01489,
       "quarterly": 0.04523,
-      "yearly": 0.18500
+      "yearly": 0.185
     }
   }
 }
 ```
 
 ### 3.3 バックテスト実行
+
 **Endpoint**: `POST /api/portfolio/backtest`
 
 **Description**: 過去データでポートフォリオのバックテストを実行
 
 **Request Body**:
+
 ```json
 {
   "portfolio": {
     "assets": [
-      {"symbol": "AAPL", "weight": 0.30},
-      {"symbol": "GOOGL", "weight": 0.30},
-      {"symbol": "BND", "weight": 0.40}
+      { "symbol": "AAPL", "weight": 0.3 },
+      { "symbol": "GOOGL", "weight": 0.3 },
+      { "symbol": "BND", "weight": 0.4 }
     ]
   },
   "startDate": "2020-01-01",
@@ -438,6 +462,7 @@ Cache-Control: private, max-age=60
 ```
 
 **Response Example**:
+
 ```json
 {
   "success": true,
@@ -453,28 +478,28 @@ Cache-Control: private, max-age=60
       "winRate": 0.625,
       "profitFactor": 1.85,
       "totalTrades": 48,
-      "totalCosts": 125.50
+      "totalCosts": 125.5
     },
     "equity": [
-      {"date": "2020-01-01", "value": 10000},
-      {"date": "2020-01-02", "value": 10052},
-      {"date": "2020-01-03", "value": 10098}
+      { "date": "2020-01-01", "value": 10000 },
+      { "date": "2020-01-02", "value": 10052 },
+      { "date": "2020-01-03", "value": 10098 }
     ],
     "trades": [
       {
         "date": "2020-04-01",
         "type": "rebalance",
         "actions": [
-          {"symbol": "AAPL", "action": "buy", "quantity": 5, "price": 255.50},
-          {"symbol": "BND", "action": "sell", "quantity": 10, "price": 85.20}
+          { "symbol": "AAPL", "action": "buy", "quantity": 5, "price": 255.5 },
+          { "symbol": "BND", "action": "sell", "quantity": 10, "price": 85.2 }
         ],
         "cost": 2.58
       }
     ],
     "monthlyReturns": [
-      {"month": "2020-01", "return": 0.0234},
-      {"month": "2020-02", "return": -0.0456},
-      {"month": "2020-03", "return": -0.1234}
+      { "month": "2020-01", "return": 0.0234 },
+      { "month": "2020-02", "return": -0.0456 },
+      { "month": "2020-03", "return": -0.1234 }
     ]
   }
 }
@@ -483,17 +508,19 @@ Cache-Control: private, max-age=60
 ## 4. Simulation API
 
 ### 4.1 モンテカルロシミュレーション
+
 **Endpoint**: `POST /api/simulation/montecarlo`
 
 **Description**: モンテカルロシミュレーションを実行
 
 **Request Body**:
+
 ```json
 {
   "portfolio": {
     "assets": [
-      {"symbol": "SPY", "weight": 0.60},
-      {"symbol": "BND", "weight": 0.40}
+      { "symbol": "SPY", "weight": 0.6 },
+      { "symbol": "BND", "weight": 0.4 }
     ]
   },
   "numSimulations": 10000,
@@ -505,6 +532,7 @@ Cache-Control: private, max-age=60
 ```
 
 **Response Example**:
+
 ```json
 {
   "success": true,
@@ -535,19 +563,21 @@ Cache-Control: private, max-age=60
 ## 5. Market Data API
 
 ### 5.1 市場指標取得
+
 **Endpoint**: `GET /api/market/indicators`
 
 **Description**: 主要市場指標を取得
 
 **Response Example**:
+
 ```json
 {
   "success": true,
   "data": {
     "indices": {
-      "SP500": {"value": 4783.45, "change": 0.52},
-      "NASDAQ": {"value": 15123.68, "change": 0.78},
-      "DOW": {"value": 37689.54, "change": 0.35}
+      "SP500": { "value": 4783.45, "change": 0.52 },
+      "NASDAQ": { "value": 15123.68, "change": 0.78 },
+      "DOW": { "value": 37689.54, "change": 0.35 }
     },
     "rates": {
       "US10Y": 4.25,
@@ -555,12 +585,12 @@ Cache-Control: private, max-age=60
       "FED_FUNDS": 5.33
     },
     "commodities": {
-      "GOLD": {"value": 2050.30, "change": -0.25},
-      "OIL": {"value": 75.85, "change": 1.20}
+      "GOLD": { "value": 2050.3, "change": -0.25 },
+      "OIL": { "value": 75.85, "change": 1.2 }
     },
     "crypto": {
-      "BTC": {"value": 45230.50, "change": 2.35},
-      "ETH": {"value": 2485.75, "change": 3.12}
+      "BTC": { "value": 45230.5, "change": 2.35 },
+      "ETH": { "value": 2485.75, "change": 3.12 }
     },
     "vix": 13.45,
     "dollarIndex": 102.35,
@@ -570,6 +600,7 @@ Cache-Control: private, max-age=60
 ```
 
 ### 5.2 セクターパフォーマンス
+
 **Endpoint**: `GET /api/market/sectors`
 
 **Description**: セクター別パフォーマンスを取得
@@ -580,6 +611,7 @@ Cache-Control: private, max-age=60
 | period | string | No | 期間 | `1d`, `1w`, `1m`, `3m`, `1y` |
 
 **Response Example**:
+
 ```json
 {
   "success": true,
@@ -612,11 +644,13 @@ Cache-Control: private, max-age=60
 ## 6. Presets API
 
 ### 6.1 プリセットポートフォリオ一覧
+
 **Endpoint**: `GET /api/presets`
 
 **Description**: 利用可能なプリセットポートフォリオの一覧を取得
 
 **Response Example**:
+
 ```json
 {
   "success": true,
@@ -628,10 +662,10 @@ Cache-Control: private, max-age=60
         "description": "A balanced mix of stocks and bonds",
         "riskLevel": "moderate",
         "assets": [
-          {"symbol": "SPY", "weight": 0.40, "name": "S&P 500"},
-          {"symbol": "BND", "weight": 0.30, "name": "Bonds"},
-          {"symbol": "VNQ", "weight": 0.15, "name": "Real Estate"},
-          {"symbol": "GLD", "weight": 0.15, "name": "Gold"}
+          { "symbol": "SPY", "weight": 0.4, "name": "S&P 500" },
+          { "symbol": "BND", "weight": 0.3, "name": "Bonds" },
+          { "symbol": "VNQ", "weight": 0.15, "name": "Real Estate" },
+          { "symbol": "GLD", "weight": 0.15, "name": "Gold" }
         ],
         "historicalReturn": 0.085,
         "historicalVolatility": 0.098
@@ -642,9 +676,9 @@ Cache-Control: private, max-age=60
         "description": "High growth potential with higher risk",
         "riskLevel": "high",
         "assets": [
-          {"symbol": "QQQ", "weight": 0.40, "name": "NASDAQ 100"},
-          {"symbol": "VWO", "weight": 0.30, "name": "Emerging Markets"},
-          {"symbol": "ARKK", "weight": 0.30, "name": "Innovation"}
+          { "symbol": "QQQ", "weight": 0.4, "name": "NASDAQ 100" },
+          { "symbol": "VWO", "weight": 0.3, "name": "Emerging Markets" },
+          { "symbol": "ARKK", "weight": 0.3, "name": "Innovation" }
         ],
         "historicalReturn": 0.125,
         "historicalVolatility": 0.185
@@ -657,28 +691,31 @@ Cache-Control: private, max-age=60
 ## 7. Error Codes
 
 ### Error Code Reference
-| Code | HTTP Status | Description |
-|------|-------------|-------------|
-| `INVALID_REQUEST` | 400 | リクエストパラメータが不正 |
-| `INVALID_SYMBOL` | 400 | 無効なティッカーシンボル |
-| `INVALID_DATE_RANGE` | 400 | 無効な日付範囲 |
-| `MISSING_REQUIRED_FIELD` | 400 | 必須フィールドが不足 |
-| `RESOURCE_NOT_FOUND` | 404 | リソースが見つからない |
-| `METHOD_NOT_ALLOWED` | 405 | HTTPメソッドが許可されていない |
-| `RATE_LIMIT_EXCEEDED` | 429 | レート制限超過 |
-| `EXTERNAL_API_ERROR` | 502 | 外部API通信エラー |
-| `CALCULATION_ERROR` | 500 | 計算処理エラー |
-| `INTERNAL_SERVER_ERROR` | 500 | 内部サーバーエラー |
-| `SERVICE_UNAVAILABLE` | 503 | サービス一時停止中 |
+
+| Code                     | HTTP Status | Description                    |
+| ------------------------ | ----------- | ------------------------------ |
+| `INVALID_REQUEST`        | 400         | リクエストパラメータが不正     |
+| `INVALID_SYMBOL`         | 400         | 無効なティッカーシンボル       |
+| `INVALID_DATE_RANGE`     | 400         | 無効な日付範囲                 |
+| `MISSING_REQUIRED_FIELD` | 400         | 必須フィールドが不足           |
+| `RESOURCE_NOT_FOUND`     | 404         | リソースが見つからない         |
+| `METHOD_NOT_ALLOWED`     | 405         | HTTPメソッドが許可されていない |
+| `RATE_LIMIT_EXCEEDED`    | 429         | レート制限超過                 |
+| `EXTERNAL_API_ERROR`     | 502         | 外部API通信エラー              |
+| `CALCULATION_ERROR`      | 500         | 計算処理エラー                 |
+| `INTERNAL_SERVER_ERROR`  | 500         | 内部サーバーエラー             |
+| `SERVICE_UNAVAILABLE`    | 503         | サービス一時停止中             |
 
 ## 8. Rate Limiting
 
 ### Rate Limit Rules
+
 - **Default**: 100 requests per minute
 - **Authenticated**: 500 requests per minute (将来実装)
 - **Enterprise**: Unlimited (将来実装)
 
 ### Rate Limit Headers
+
 ```http
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 95
@@ -686,6 +723,7 @@ X-RateLimit-Reset: 1609459200
 ```
 
 ### Rate Limit Exceeded Response
+
 ```json
 {
   "success": false,
@@ -704,11 +742,13 @@ X-RateLimit-Reset: 1609459200
 ## 9. Webhook API (将来実装)
 
 ### 9.1 Webhook登録
+
 **Endpoint**: `POST /api/webhooks`
 
 **Description**: Webhook URLを登録
 
 **Request Body**:
+
 ```json
 {
   "url": "https://example.com/webhook",
@@ -718,15 +758,17 @@ X-RateLimit-Reset: 1609459200
 ```
 
 ### 9.2 Webhook Events
-| Event | Description |
-|-------|-------------|
-| `portfolio.created` | ポートフォリオ作成時 |
-| `portfolio.analyzed` | 分析完了時 |
-| `portfolio.optimized` | 最適化完了時 |
-| `alert.triggered` | アラート発火時 |
-| `rebalance.required` | リバランス必要時 |
+
+| Event                 | Description          |
+| --------------------- | -------------------- |
+| `portfolio.created`   | ポートフォリオ作成時 |
+| `portfolio.analyzed`  | 分析完了時           |
+| `portfolio.optimized` | 最適化完了時         |
+| `alert.triggered`     | アラート発火時       |
+| `rebalance.required`  | リバランス必要時     |
 
 ### 9.3 Webhook Payload Example
+
 ```json
 {
   "event": "portfolio.analyzed",
@@ -745,30 +787,32 @@ X-RateLimit-Reset: 1609459200
 ## 10. SDK Examples
 
 ### JavaScript/TypeScript
+
 ```typescript
-import { AssetAllocationClient } from '@assetallocation/sdk';
+import { AssetAllocationClient } from '@assetallocation/sdk'
 
 const client = new AssetAllocationClient({
   apiKey: 'your_api_key',
-  baseURL: 'https://api.assetallocation.app/v1'
-});
+  baseURL: 'https://api.assetallocation.app/v1',
+})
 
 // Search assets
 const assets = await client.assets.search({
   query: 'AAPL',
-  limit: 10
-});
+  limit: 10,
+})
 
 // Optimize portfolio
 const result = await client.portfolio.optimize({
   assets: ['AAPL', 'GOOGL', 'BND'],
   startDate: '2023-01-01',
   endDate: '2024-01-01',
-  optimizationType: 'max_sharpe'
-});
+  optimizationType: 'max_sharpe',
+})
 ```
 
 ### Python
+
 ```python
 from assetallocation import Client
 
@@ -793,5 +837,6 @@ analysis = client.portfolio.analyze(
 ```
 
 ---
-*API Version: v1*  
-*Last Updated: December 2024*
+
+_API Version: v1_  
+_Last Updated: December 2024_

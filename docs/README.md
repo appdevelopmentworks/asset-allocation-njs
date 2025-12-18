@@ -6,7 +6,7 @@ A modern portfolio optimization application built with Next.js 15, featuring rea
 
 - **Portfolio Optimization**: Multiple optimization strategies (Max Sharpe, Min Variance, Risk Parity)
 - **Real-time Data**: Live market data from Yahoo Finance
-- **Efficient Frontier**: Interactive visualization of risk-return tradeoffs  
+- **Efficient Frontier**: Interactive visualization of risk-return tradeoffs
 - **Mobile-First**: Fully responsive design with touch gestures
 - **Dark Mode**: System-aware theme switching
 - **Performance**: Optimized with Next.js 15 App Router
@@ -14,6 +14,7 @@ A modern portfolio optimization application built with Next.js 15, featuring rea
 ## 🛠 Tech Stack
 
 ### Frontend
+
 - **Framework**: Next.js 15 (App Router)
 - **Language**: TypeScript 5.3
 - **Styling**: TailwindCSS + shadcn/ui
@@ -22,12 +23,14 @@ A modern portfolio optimization application built with Next.js 15, featuring rea
 - **State**: Zustand
 
 ### Backend
+
 - **API**: Next.js API Routes
 - **Database**: PostgreSQL (Supabase)
 - **Cache**: Redis (Upstash)
 - **Data Source**: Yahoo Finance API
 
 ### Infrastructure
+
 - **Hosting**: Vercel
 - **CDN**: Cloudflare
 - **Monitoring**: Vercel Analytics, Sentry
@@ -65,6 +68,7 @@ asset-allocation-nextjs/
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 20+
 - pnpm 8+
 - PostgreSQL 15+
@@ -73,29 +77,34 @@ asset-allocation-nextjs/
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/yourusername/asset-allocation-nextjs.git
 cd asset-allocation-nextjs
 ```
 
 2. Install dependencies:
+
 ```bash
 pnpm install
 ```
 
 3. Set up environment variables:
+
 ```bash
 cp .env.example .env.local
 # Edit .env.local with your credentials
 ```
 
 4. Set up the database:
+
 ```bash
 pnpm prisma migrate dev
 pnpm prisma db seed
 ```
 
 5. Run the development server:
+
 ```bash
 pnpm dev
 ```

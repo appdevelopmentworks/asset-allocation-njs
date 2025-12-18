@@ -24,7 +24,7 @@ const rangeOptions: Array<{ value: RangeValue; label: string }> = [
 ]
 
 const glassPanel =
-  'relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/60 via-slate-900/50 to-slate-800/50 shadow-xl shadow-black/30 backdrop-blur supports-[backdrop-filter]:backdrop-blur-md'
+  'relative overflow-hidden rounded-xl border border-slate-700/50 bg-gradient-to-br from-slate-800/95 via-slate-850/95 to-slate-900/95 shadow-2xl shadow-black/50 backdrop-blur-sm'
 
 export default function DashboardHomePage() {
   const { t, locale } = useLocale()
@@ -226,56 +226,56 @@ export default function DashboardHomePage() {
       <div className="pointer-events-none absolute inset-0 -z-20 bg-gradient-to-b from-slate-950 via-slate-950/92 to-slate-950/80" />
       <header className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="space-y-2">
-          <h1 className="text-3xl font-semibold">{t('dashboard.overview.title')}</h1>
-          <p className="text-sm text-muted-foreground">{t('dashboard.overview.subtitle')}</p>
+          <h1 className="text-3xl font-bold text-white">{t('dashboard.overview.title')}</h1>
+          <p className="text-sm text-slate-300">{t('dashboard.overview.subtitle')}</p>
         </div>
         <div className="flex flex-wrap gap-4">
-          <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-300">
             {assetSelectorLabel}
             <select
               value={selectedAsset}
               onChange={(event) => setSelectedAsset(event.target.value)}
-              className="rounded-lg border bg-background px-3 py-2 text-sm font-medium text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/60"
+              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
             >
               {assetOptions.map((option) => (
-                <option key={option.symbol} value={option.symbol}>
+                <option key={option.symbol} value={option.symbol} className="bg-slate-900">
                   {option.label}
                 </option>
               ))}
             </select>
           </label>
-          <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-300">
             {rangeSelectorLabel}
             <select
               value={selectedRange}
               onChange={(event) => setSelectedRange(event.target.value as RangeValue)}
-              className="rounded-lg border bg-background px-3 py-2 text-sm font-medium text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/60"
+              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
             >
               {rangeOptions.map((option) => (
-                <option key={option.value} value={option.value}>
+                <option key={option.value} value={option.value} className="bg-slate-900">
                   {rangeLabelText(option.value)}
                 </option>
               ))}
             </select>
           </label>
-          <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-300">
             {comparisonToggleLabel}
             <input
               type="checkbox"
               checked={isComparisonMode}
               onChange={(event) => handleComparisonToggle(event.target.checked)}
-              className="h-4 w-4 accent-primary"
+              className="h-4 w-4 accent-indigo-500"
               disabled={!comparisonCandidates.length}
             />
           </label>
         </div>
         {isComparisonMode ? (
-          <div className="w-full space-y-3 rounded-lg border bg-background/70 p-4">
+          <div className="w-full space-y-3 rounded-lg border border-slate-700 bg-slate-800/50 p-4">
             <div className="flex flex-col gap-1">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <p className="text-xs font-bold uppercase tracking-wider text-indigo-300">
                 {comparisonLabel}
               </p>
-              <p className="text-xs text-muted-foreground">{comparisonHelperText}</p>
+              <p className="text-xs text-slate-300">{comparisonHelperText}</p>
             </div>
             {comparisonCandidates.length ? (
               <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -285,18 +285,17 @@ export default function DashboardHomePage() {
                     <label
                       key={option.symbol}
                       title={option.label}
-                      className={`flex items-center justify-between gap-3 rounded-lg border px-3 py-2 text-xs transition ${
-                        isSelected
-                          ? 'border-primary bg-primary/10 text-primary'
-                          : 'border-muted bg-background text-foreground'
-                      }`}
+                      className={`flex items-center justify-between gap-3 rounded-lg border px-3 py-2 text-xs transition ${isSelected
+                          ? 'border-indigo-500 bg-indigo-500/20 text-indigo-200'
+                          : 'border-slate-700 bg-slate-800 text-white'
+                        }`}
                     >
                       <span className="text-sm font-semibold">{option.symbol}</span>
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => toggleComparisonSymbol(option.symbol)}
-                        className="h-4 w-4 accent-primary"
+                        className="h-4 w-4 accent-indigo-500"
                       />
                     </label>
                   )
@@ -336,32 +335,32 @@ export default function DashboardHomePage() {
       >
         <div className="grid gap-6 lg:grid-cols-[2fr,3fr]">
           <div className="space-y-4">
-            <dl className="grid gap-3 text-sm">
+            <dl className="grid gap-4 text-sm">
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <dt className="font-bold text-indigo-300">
                   資産名
                 </dt>
-                <dd className="mt-1 font-medium text-foreground">{assetSummary.name}</dd>
+                <dd className="mt-1 font-bold text-white">{assetSummary.name}</dd>
               </div>
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <dt className="font-bold text-indigo-300">
                   ポートフォリオ配分
                 </dt>
-                <dd className="mt-1 font-medium text-foreground">
+                <dd className="mt-1 font-bold text-white">
                   {(allocation * 100).toFixed(1)}%
                 </dd>
               </div>
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <dt className="font-bold text-indigo-300">
                   年初来リターン
                 </dt>
-                <dd className="mt-1 font-medium text-foreground">
+                <dd className="mt-1 font-bold text-white">
                   {(assetSummary.yearToDate * 100).toFixed(1)}%
                 </dd>
               </div>
             </dl>
           </div>
-          <p className="rounded-lg border bg-background/70 p-4 text-sm text-muted-foreground">
+          <p className="rounded-lg border border-slate-700/50 bg-slate-800/40 p-4 text-sm text-slate-200">
             {assetSummary.description}
           </p>
         </div>
@@ -374,11 +373,11 @@ export default function DashboardHomePage() {
         <ul className="space-y-4">
           {mockActivityLog.map((item) => (
             <li key={item.title} className="space-y-1">
-              <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+              <p className="text-xs font-bold uppercase tracking-wider text-indigo-300">
                 {item.date}
               </p>
-              <p className="text-sm font-semibold text-foreground">{item.title}</p>
-              <p className="text-xs text-muted-foreground">{item.description}</p>
+              <p className="text-sm font-bold text-white">{item.title}</p>
+              <p className="text-xs text-slate-300/90">{item.description}</p>
             </li>
           ))}
         </ul>

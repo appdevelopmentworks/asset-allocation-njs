@@ -32,11 +32,13 @@ export function AllocationPieChart({ assets }: AllocationPieChartProps) {
       layout={{
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
+        font: { color: '#ffffff', family: 'Inter, sans-serif' },
         margin: { t: 20, r: 20, b: 20, l: 20 },
         showlegend: true,
         legend: {
           orientation: 'h',
           y: -0.2,
+          font: { color: '#ffffff' },
         },
       }}
       config={{ displaylogo: false, responsive: true }}

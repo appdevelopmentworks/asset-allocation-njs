@@ -31,7 +31,7 @@ function createDraftAssets(portfolio: Portfolio): DraftAsset[] {
 const assetTypes: AssetType[] = ['stock', 'etf', 'bond', 'commodity', 'crypto', 'reit']
 
 const glassCard =
-  'relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/60 via-slate-900/50 to-slate-800/50 shadow-xl shadow-black/30 backdrop-blur supports-[backdrop-filter]:backdrop-blur-md text-slate-100'
+  'relative overflow-hidden rounded-xl border border-slate-700/60 bg-gradient-to-br from-slate-800 via-slate-850 to-slate-900 shadow-2xl shadow-black/50 text-white'
 
 export function PortfolioEditor({ portfolio, onSave, onReset }: PortfolioEditorProps) {
   const { locale } = useLocale()
@@ -59,44 +59,44 @@ export function PortfolioEditor({ portfolio, onSave, onReset }: PortfolioEditorP
   const text =
     locale === 'ja'
       ? {
-          title: 'ポートフォリオ情報',
-          subtitle: 'ポートフォリオ名や資産配分を編集し、ローカルストレージに保存します。',
-          addAsset: '資産を追加',
-          reset: 'リセット',
-          name: 'ポートフォリオ名',
-          description: '説明',
-          currency: '通貨',
-          ticker: 'ティッカー',
-          assetName: '名称',
-          type: 'タイプ',
-          weight: '配分 (0-1)',
-          remove: '削除',
-          total: '合計配分',
-          save: '保存',
-          success: 'ポートフォリオを保存しました。',
-          needAsset: '少なくとも1つの資産を入力してください。',
-          zeroAllocation: '資産の配分が 0% です。',
-        }
+        title: 'ポートフォリオ情報',
+        subtitle: 'ポートフォリオ名や資産配分を編集し、ローカルストレージに保存します。',
+        addAsset: '資産を追加',
+        reset: 'リセット',
+        name: 'ポートフォリオ名',
+        description: '説明',
+        currency: '通貨',
+        ticker: 'ティッカー',
+        assetName: '名称',
+        type: 'タイプ',
+        weight: '配分 (0-1)',
+        remove: '削除',
+        total: '合計配分',
+        save: '保存',
+        success: 'ポートフォリオを保存しました。',
+        needAsset: '少なくとも1つの資産を入力してください。',
+        zeroAllocation: '資産の配分が 0% です。',
+      }
       : {
-          title: 'Portfolio Details',
-          subtitle:
-            'Adjust portfolio metadata and asset allocation; data is stored locally in your browser.',
-          addAsset: 'Add Asset',
-          reset: 'Reset',
-          name: 'Portfolio Name',
-          description: 'Description',
-          currency: 'Currency',
-          ticker: 'Ticker',
-          assetName: 'Name',
-          type: 'Type',
-          weight: 'Weight (0-1)',
-          remove: 'Remove',
-          total: 'Total Allocation',
-          save: 'Save',
-          success: 'Portfolio saved locally.',
-          needAsset: 'Please provide at least one asset.',
-          zeroAllocation: 'Total allocation must be greater than 0%.',
-        }
+        title: 'Portfolio Details',
+        subtitle:
+          'Adjust portfolio metadata and asset allocation; data is stored locally in your browser.',
+        addAsset: 'Add Asset',
+        reset: 'Reset',
+        name: 'Portfolio Name',
+        description: 'Description',
+        currency: 'Currency',
+        ticker: 'Ticker',
+        assetName: 'Name',
+        type: 'Type',
+        weight: 'Weight (0-1)',
+        remove: 'Remove',
+        total: 'Total Allocation',
+        save: 'Save',
+        success: 'Portfolio saved locally.',
+        needAsset: 'Please provide at least one asset.',
+        zeroAllocation: 'Total allocation must be greater than 0%.',
+      }
 
   const updateAsset = (id: string, patch: Partial<DraftAsset>) => {
     setAssets((prev) => prev.map((asset) => (asset.id === id ? { ...asset, ...patch } : asset)))
@@ -164,18 +164,18 @@ export function PortfolioEditor({ portfolio, onSave, onReset }: PortfolioEditorP
 
   return (
     <section className={`${glassCard} space-y-6 p-6`}>
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.08),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(255,255,255,0.05),transparent_30%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(99,102,241,0.15),transparent_50%),radial-gradient(circle_at_70%_40%,rgba(168,85,247,0.1),transparent_50%)]" />
       <div className="relative space-y-6">
         <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-white">{text.title}</h2>
-            <p className="text-sm text-slate-300">{text.subtitle}</p>
+          <div className="space-y-1">
+            <h2 className="text-xl font-bold tracking-tight text-white">{text.title}</h2>
+            <p className="text-sm text-slate-300/90">{text.subtitle}</p>
           </div>
           <div className="flex gap-3 text-sm">
             <button
               type="button"
               onClick={addAsset}
-              className="rounded-lg border border-white/20 bg-white/10 px-3 py-2 font-semibold text-white transition hover:border-primary/60 hover:text-primary shadow-sm"
+              className="rounded-lg border border-indigo-400/30 bg-indigo-500/20 px-4 py-2 text-sm font-bold text-indigo-200 shadow-lg transition hover:bg-indigo-500/30"
             >
               {text.addAsset}
             </button>
@@ -183,7 +183,7 @@ export function PortfolioEditor({ portfolio, onSave, onReset }: PortfolioEditorP
               <button
                 type="button"
                 onClick={onReset}
-                className="rounded-lg border border-rose-400/50 bg-rose-500/10 px-3 py-2 font-semibold text-rose-50 transition hover:border-rose-300 hover:text-white shadow-sm"
+                className="rounded-lg border border-rose-400/30 bg-rose-500/20 px-4 py-2 text-sm font-bold text-rose-200 shadow-lg transition hover:bg-rose-500/30"
               >
                 {text.reset}
               </button>
@@ -192,61 +192,61 @@ export function PortfolioEditor({ portfolio, onSave, onReset }: PortfolioEditorP
         </header>
 
         <div className="grid gap-4 md:grid-cols-3">
-          <label className="flex flex-col gap-2 text-xs font-semibold uppercase tracking-wide text-slate-300">
+          <label className="flex flex-col gap-2 text-xs font-bold uppercase tracking-[0.2em] text-indigo-300/90">
             {text.name}
             <input
               value={name}
               onChange={(event) => setName(event.target.value)}
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/60"
+              className="rounded-lg border border-slate-700/50 bg-slate-800/60 px-3 py-2 text-sm font-bold text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/60"
             />
           </label>
-          <label className="flex flex-col gap-2 text-xs font-semibold uppercase tracking-wide text-slate-300">
+          <label className="flex flex-col gap-2 text-xs font-bold uppercase tracking-[0.2em] text-indigo-300/90">
             {text.description}
             <input
               value={description}
               onChange={(event) => setDescription(event.target.value)}
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/60"
+              className="rounded-lg border border-slate-700/50 bg-slate-800/60 px-3 py-2 text-sm font-bold text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/60"
             />
           </label>
-          <label className="flex flex-col gap-2 text-xs font-semibold uppercase tracking-wide text-slate-300">
+          <label className="flex flex-col gap-2 text-xs font-bold uppercase tracking-[0.2em] text-indigo-300/90">
             {text.currency}
             <input
               value={baseCurrency}
               maxLength={5}
               onChange={(event) => setBaseCurrency(event.target.value.toUpperCase())}
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/60"
+              className="rounded-lg border border-slate-700/50 bg-slate-800/60 px-3 py-2 text-sm font-bold text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/60"
             />
           </label>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-white/10 text-sm text-slate-100">
-            <thead className="bg-white/5">
+        <div className="overflow-hidden rounded-lg border border-slate-700/50">
+          <table className="min-w-full divide-y divide-slate-700/50 text-sm">
+            <thead className="bg-slate-800/80 text-white">
               <tr>
-                <th className="px-4 py-3 text-left font-semibold text-slate-300">{text.ticker}</th>
-                <th className="px-4 py-3 text-left font-semibold text-slate-300">
+                <th className="px-4 py-3 text-left font-bold text-slate-300">{text.ticker}</th>
+                <th className="px-4 py-3 text-left font-bold text-slate-300">
                   {text.assetName}
                 </th>
-                <th className="px-4 py-3 text-left font-semibold text-slate-300">{text.type}</th>
-                <th className="px-4 py-3 text-right font-semibold text-slate-300">{text.weight}</th>
+                <th className="px-4 py-3 text-left font-bold text-slate-300">{text.type}</th>
+                <th className="px-4 py-3 text-right font-bold text-slate-300">{text.weight}</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 bg-white/5">
+            <tbody className="divide-y divide-slate-700/30 bg-slate-800/40">
               {assets.map((asset) => (
-                <tr key={asset.id} className="transition hover:bg-white/10">
+                <tr key={asset.id} className="transition-colors hover:bg-slate-700/40">
                   <td className="px-4 py-3">
                     <input
                       value={asset.symbol}
                       onChange={(event) => updateAsset(asset.id, { symbol: event.target.value })}
-                      className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-sm text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      className="w-full rounded-lg border border-slate-700/50 bg-slate-800/60 px-2 py-1 text-sm font-bold text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                     />
                   </td>
                   <td className="px-4 py-3">
                     <input
                       value={asset.name}
                       onChange={(event) => updateAsset(asset.id, { name: event.target.value })}
-                      className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-sm text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      className="w-full rounded-lg border border-slate-700/50 bg-slate-800/60 px-2 py-1 text-sm font-bold text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                     />
                   </td>
                   <td className="px-4 py-3">
@@ -255,10 +255,10 @@ export function PortfolioEditor({ portfolio, onSave, onReset }: PortfolioEditorP
                       onChange={(event) =>
                         updateAsset(asset.id, { type: event.target.value as AssetType })
                       }
-                      className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-sm text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      className="w-full rounded-lg border border-slate-700/50 bg-slate-800/60 px-2 py-1 text-sm font-bold text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                     >
                       {assetTypes.map((type) => (
-                        <option key={type} value={type}>
+                        <option key={type} value={type} className="bg-slate-900">
                           {type}
                         </option>
                       ))}
@@ -273,14 +273,14 @@ export function PortfolioEditor({ portfolio, onSave, onReset }: PortfolioEditorP
                       onChange={(event) =>
                         updateAsset(asset.id, { weight: Number(event.target.value) })
                       }
-                      className="w-full rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-right text-sm text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      className="w-full rounded-lg border border-slate-700/50 bg-slate-800/60 px-2 py-1 text-right text-sm font-bold text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                     />
                   </td>
                   <td className="px-4 py-3 text-right">
                     <button
                       type="button"
                       onClick={() => removeAsset(asset.id)}
-                      className="rounded-lg border border-rose-300/70 bg-rose-500/15 px-2 py-1 text-xs font-semibold text-rose-50 transition hover:border-rose-200 hover:bg-rose-500/25 shadow-sm"
+                      className="rounded-lg border border-rose-400/30 bg-rose-500/20 px-3 py-1 text-xs font-bold text-rose-200 shadow-sm transition hover:bg-rose-500/30"
                     >
                       {text.remove}
                     </button>
@@ -291,19 +291,19 @@ export function PortfolioEditor({ portfolio, onSave, onReset }: PortfolioEditorP
           </table>
         </div>
 
-        <div className="flex items-center justify-between text-xs text-slate-200">
-          <span>
+        <div className="flex items-center justify-between border-t border-slate-700/50 pt-6 text-sm">
+          <span className="font-bold text-slate-300">
             {text.total}:{' '}
-            <strong className={weightWarning ? 'text-rose-300' : 'text-white'}>
-              {totalWeight.toFixed(3)}
+            <strong className={weightWarning ? 'text-rose-400' : 'text-emerald-400'}>
+              {(totalWeight * 100).toFixed(1)}%
             </strong>
           </span>
-          <div className="flex items-center gap-3">
-            {status ? <span>{status}</span> : null}
+          <div className="flex items-center gap-4">
+            {status ? <span className="font-bold text-emerald-400">{status}</span> : null}
             <button
               type="button"
               onClick={handleSave}
-              className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90"
+              className="rounded-lg bg-indigo-600 px-6 py-2 text-sm font-bold text-white shadow-lg shadow-indigo-900/40 transition hover:bg-indigo-500"
             >
               {text.save}
             </button>

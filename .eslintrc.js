@@ -5,7 +5,11 @@ module.exports = {
     project: './tsconfig.json',
   },
   plugins: ['@typescript-eslint', 'prettier'],
-  extends: ['next/core-web-vitals', 'plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
+  extends: [
+    'next/core-web-vitals',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:prettier/recommended',
+  ],
   rules: {
     'prettier/prettier': ['error'],
   },

@@ -2,7 +2,17 @@ const path = require('path')
 
 const projectRoot = __dirname
 const srcDir = path.join(projectRoot, 'src')
-const ROOT_MARKERS = ['/lib/', '/components/', '/hooks/', '/types/', '/utils/', '/stores/', '/api/', '/app/', '/tests/']
+const ROOT_MARKERS = [
+  '/lib/',
+  '/components/',
+  '/hooks/',
+  '/types/',
+  '/utils/',
+  '/stores/',
+  '/api/',
+  '/app/',
+  '/tests/',
+]
 
 module.exports = function jestResolver(request, options) {
   const defaultResolver = options?.defaultResolver

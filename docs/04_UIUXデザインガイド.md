@@ -3,6 +3,7 @@
 ## 1. デザイン原則
 
 ### 1.1 Core Principles
+
 1. **Clarity First**: 複雑な金融データをシンプルに表現
 2. **Mobile First**: モバイルファーストでレスポンシブデザイン
 3. **Data Visualization**: データの視覚化を最優先
@@ -10,6 +11,7 @@
 5. **Performance**: 高速なインタラクション
 
 ### 1.2 Design System
+
 - **Design Token Based**: 一貫性のあるデザイントークン
 - **Component Driven**: 再利用可能なコンポーネント
 - **Theme Support**: ダーク/ライトモード対応
@@ -18,6 +20,7 @@
 ## 2. カラーパレット
 
 ### 2.1 Primary Colors
+
 ```css
 /* Light Theme */
 --primary-50: #eff6ff;
@@ -25,7 +28,7 @@
 --primary-200: #bfdbfe;
 --primary-300: #93c5fd;
 --primary-400: #60a5fa;
---primary-500: #3b82f6;  /* Main */
+--primary-500: #3b82f6; /* Main */
 --primary-600: #2563eb;
 --primary-700: #1d4ed8;
 --primary-800: #1e40af;
@@ -36,6 +39,7 @@
 ```
 
 ### 2.2 Semantic Colors
+
 ```css
 /* Status Colors */
 --success: #10b981;
@@ -60,6 +64,7 @@
 ```
 
 ### 2.3 Neutral Colors
+
 ```css
 /* Gray Scale */
 --gray-50: #f9fafb;
@@ -87,6 +92,7 @@
 ## 3. タイポグラフィ
 
 ### 3.1 Font Family
+
 ```css
 --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 --font-mono: 'JetBrains Mono', 'Courier New', monospace;
@@ -94,17 +100,18 @@
 ```
 
 ### 3.2 Font Scale
+
 ```css
 /* Text Sizes */
---text-xs: 0.75rem;    /* 12px */
---text-sm: 0.875rem;   /* 14px */
---text-base: 1rem;     /* 16px */
---text-lg: 1.125rem;   /* 18px */
---text-xl: 1.25rem;    /* 20px */
---text-2xl: 1.5rem;    /* 24px */
---text-3xl: 1.875rem;  /* 30px */
---text-4xl: 2.25rem;   /* 36px */
---text-5xl: 3rem;      /* 48px */
+--text-xs: 0.75rem; /* 12px */
+--text-sm: 0.875rem; /* 14px */
+--text-base: 1rem; /* 16px */
+--text-lg: 1.125rem; /* 18px */
+--text-xl: 1.25rem; /* 20px */
+--text-2xl: 1.5rem; /* 24px */
+--text-3xl: 1.875rem; /* 30px */
+--text-4xl: 2.25rem; /* 36px */
+--text-5xl: 3rem; /* 48px */
 
 /* Line Heights */
 --leading-none: 1;
@@ -125,37 +132,40 @@
 ## 4. スペーシング
 
 ### 4.1 Spacing Scale
+
 ```css
 --space-0: 0;
---space-1: 0.25rem;   /* 4px */
---space-2: 0.5rem;    /* 8px */
---space-3: 0.75rem;   /* 12px */
---space-4: 1rem;      /* 16px */
---space-5: 1.25rem;   /* 20px */
---space-6: 1.5rem;    /* 24px */
---space-8: 2rem;      /* 32px */
---space-10: 2.5rem;   /* 40px */
---space-12: 3rem;     /* 48px */
---space-16: 4rem;     /* 64px */
---space-20: 5rem;     /* 80px */
---space-24: 6rem;     /* 96px */
+--space-1: 0.25rem; /* 4px */
+--space-2: 0.5rem; /* 8px */
+--space-3: 0.75rem; /* 12px */
+--space-4: 1rem; /* 16px */
+--space-5: 1.25rem; /* 20px */
+--space-6: 1.5rem; /* 24px */
+--space-8: 2rem; /* 32px */
+--space-10: 2.5rem; /* 40px */
+--space-12: 3rem; /* 48px */
+--space-16: 4rem; /* 64px */
+--space-20: 5rem; /* 80px */
+--space-24: 6rem; /* 96px */
 ```
 
 ### 4.2 Border Radius
+
 ```css
 --radius-none: 0;
---radius-sm: 0.125rem;  /* 2px */
+--radius-sm: 0.125rem; /* 2px */
 --radius-default: 0.25rem; /* 4px */
---radius-md: 0.375rem;  /* 6px */
---radius-lg: 0.5rem;    /* 8px */
---radius-xl: 0.75rem;   /* 12px */
---radius-2xl: 1rem;     /* 16px */
+--radius-md: 0.375rem; /* 6px */
+--radius-lg: 0.5rem; /* 8px */
+--radius-xl: 0.75rem; /* 12px */
+--radius-2xl: 1rem; /* 16px */
 --radius-full: 9999px;
 ```
 
 ## 5. コンポーネントデザイン
 
 ### 5.1 Button Component
+
 ```tsx
 // Primary Button
 <Button variant="primary" size="md">
@@ -178,6 +188,7 @@ size: 'sm' | 'md' | 'lg' | 'icon'
 ```
 
 ### 5.2 Card Component
+
 ```tsx
 <Card>
   <CardHeader>
@@ -200,6 +211,7 @@ size: 'sm' | 'md' | 'lg' | 'icon'
 ```
 
 ### 5.3 Input Component
+
 ```tsx
 <Input
   type="text"
@@ -217,6 +229,7 @@ size: 'sm' | 'md' | 'lg' | 'icon'
 ```
 
 ### 5.4 Chart Components
+
 ```tsx
 // Line Chart
 <LineChart
@@ -240,15 +253,17 @@ size: 'sm' | 'md' | 'lg' | 'icon'
 ## 6. レイアウトパターン
 
 ### 6.1 Responsive Breakpoints
+
 ```css
---screen-sm: 640px;   /* Mobile landscape */
---screen-md: 768px;   /* Tablet */
---screen-lg: 1024px;  /* Desktop */
---screen-xl: 1280px;  /* Large desktop */
+--screen-sm: 640px; /* Mobile landscape */
+--screen-md: 768px; /* Tablet */
+--screen-lg: 1024px; /* Desktop */
+--screen-xl: 1280px; /* Large desktop */
 --screen-2xl: 1536px; /* Extra large */
 ```
 
 ### 6.2 Grid System
+
 ```css
 /* 12-column grid */
 .grid-cols-1   /* Mobile: 1 column */
@@ -262,6 +277,7 @@ gap-4 /* 16px gap */
 ```
 
 ### 6.3 Container Widths
+
 ```css
 .container {
   --max-width-sm: 640px;
@@ -269,7 +285,7 @@ gap-4 /* 16px gap */
   --max-width-lg: 1024px;
   --max-width-xl: 1280px;
   --max-width-2xl: 1536px;
-  
+
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -278,6 +294,7 @@ gap-4 /* 16px gap */
 ## 7. インタラクションデザイン
 
 ### 7.1 Animations
+
 ```css
 /* Transition Durations */
 --duration-75: 75ms;
@@ -296,35 +313,37 @@ gap-4 /* 16px gap */
 ```
 
 ### 7.2 Framer Motion Animations
+
 ```tsx
 // Page Transitions
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -20 }
-};
+  exit: { opacity: 0, y: -20 },
+}
 
 // Stagger Children
 const containerVariants = {
   animate: {
     transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
+      staggerChildren: 0.1,
+    },
+  },
+}
 
 // Chart Animations
 const chartVariants = {
   initial: { scale: 0.9, opacity: 0 },
-  animate: { 
-    scale: 1, 
+  animate: {
+    scale: 1,
     opacity: 1,
-    transition: { duration: 0.5, ease: "easeOut" }
-  }
-};
+    transition: { duration: 0.5, ease: 'easeOut' },
+  },
+}
 ```
 
 ### 7.3 Micro-interactions
+
 ```css
 /* Hover Effects */
 .hover-scale:hover {
@@ -341,24 +360,24 @@ const chartVariants = {
 /* Loading States */
 .skeleton {
   animation: shimmer 2s infinite;
-  background: linear-gradient(
-    90deg,
-    #f3f4f6 25%,
-    #e5e7eb 50%,
-    #f3f4f6 75%
-  );
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
   background-size: 200% 100%;
 }
 
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 ```
 
 ## 8. モバイルデザイン
 
 ### 8.1 Touch Targets
+
 ```css
 /* Minimum touch target size: 44x44px */
 .touch-target {
@@ -371,6 +390,7 @@ const chartVariants = {
 ```
 
 ### 8.2 Mobile Navigation
+
 ```tsx
 // Bottom Navigation for Mobile
 <MobileNav>
@@ -383,6 +403,7 @@ const chartVariants = {
 ```
 
 ### 8.3 Gesture Support
+
 ```tsx
 // Swipe to Delete
 <SwipeableItem
@@ -401,6 +422,7 @@ const chartVariants = {
 ## 9. アクセシビリティ
 
 ### 9.1 WCAG 2.1 Guidelines
+
 - **Color Contrast**: AA level (4.5:1 for normal text, 3:1 for large text)
 - **Focus Indicators**: Visible focus states for all interactive elements
 - **Keyboard Navigation**: Full keyboard support
@@ -408,6 +430,7 @@ const chartVariants = {
 - **Alt Text**: Descriptive alt text for all images and charts
 
 ### 9.2 ARIA Patterns
+
 ```tsx
 // Chart Accessibility
 <div
@@ -430,6 +453,7 @@ const chartVariants = {
 ```
 
 ### 9.3 Keyboard Shortcuts
+
 ```
 ⌘K / Ctrl+K: Open search
 ⌘N / Ctrl+N: New portfolio
@@ -446,6 +470,7 @@ Arrow keys: Navigate lists/menus
 ## 10. パフォーマンス最適化
 
 ### 10.1 Image Optimization
+
 ```tsx
 // Next.js Image Component
 <Image
@@ -460,18 +485,17 @@ Arrow keys: Navigate lists/menus
 ```
 
 ### 10.2 Code Splitting
+
 ```tsx
 // Lazy loading heavy components
-const HeavyChart = dynamic(
-  () => import('@/components/charts/HeavyChart'),
-  {
-    loading: () => <ChartSkeleton />,
-    ssr: false
-  }
-);
+const HeavyChart = dynamic(() => import('@/components/charts/HeavyChart'), {
+  loading: () => <ChartSkeleton />,
+  ssr: false,
+})
 ```
 
 ### 10.3 Performance Metrics
+
 - **LCP (Largest Contentful Paint)**: < 2.5s
 - **FID (First Input Delay)**: < 100ms
 - **CLS (Cumulative Layout Shift)**: < 0.1
@@ -489,26 +513,26 @@ const HeavyChart = dynamic(
   --color-surface: var(--bg-secondary);
   --color-text: var(--gray-900);
   --color-text-secondary: var(--gray-600);
-  
+
   /* Spacing */
   --spacing-unit: 0.25rem;
   --container-padding: var(--space-4);
-  
+
   /* Typography */
   --font-family-base: var(--font-sans);
   --font-size-base: var(--text-base);
   --line-height-base: var(--leading-normal);
-  
+
   /* Borders */
   --border-width: 1px;
   --border-color: var(--gray-200);
   --border-radius: var(--radius-md);
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-  
+
   /* Z-index */
   --z-dropdown: 10;
   --z-sticky: 20;
@@ -518,7 +542,7 @@ const HeavyChart = dynamic(
 }
 
 /* Dark Mode */
-[data-theme="dark"] {
+[data-theme='dark'] {
   --color-background: var(--bg-dark-primary);
   --color-surface: var(--bg-dark-secondary);
   --color-text: var(--gray-100);
@@ -530,6 +554,7 @@ const HeavyChart = dynamic(
 ## 12. コンポーネントライブラリ (shadcn/ui)
 
 ### 12.1 Available Components
+
 - Accordion
 - Alert & Alert Dialog
 - Avatar
@@ -561,6 +586,7 @@ const HeavyChart = dynamic(
 - Tooltip
 
 ### 12.2 Custom Components
+
 ```tsx
 // Portfolio Card
 <PortfolioCard
@@ -590,5 +616,6 @@ const HeavyChart = dynamic(
 ```
 
 ---
-*Last Updated: December 2024*  
-*Version: 1.0.0*
+
+_Last Updated: December 2024_  
+_Version: 1.0.0_

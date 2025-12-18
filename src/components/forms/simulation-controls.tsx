@@ -14,7 +14,7 @@ const rangeOptions: SimulationRange[] = ['1Y', '3Y', '5Y', '10Y', 'MAX']
 const rebalanceOptions: SimulationRebalance[] = ['monthly', 'quarterly', 'yearly']
 
 const glassCard =
-  'relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/60 via-slate-900/50 to-slate-800/50 shadow-xl shadow-black/30 backdrop-blur supports-[backdrop-filter]:backdrop-blur-md text-slate-100'
+  'relative overflow-hidden rounded-xl border border-slate-700/60 bg-gradient-to-br from-slate-800 via-slate-850 to-slate-900 shadow-2xl shadow-black/50 text-white'
 
 export function SimulationControls({
   availableAssets,
@@ -109,34 +109,34 @@ export function SimulationControls({
 
   return (
     <form onSubmit={handleSubmit} className={`${glassCard} space-y-6 p-6`}>
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.08),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(255,255,255,0.05),transparent_30%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(99,102,241,0.15),transparent_50%),radial-gradient(circle_at_70%_40%,rgba(168,85,247,0.1),transparent_50%)]" />
       <div className="relative space-y-6">
-        <header className="space-y-2">
-          <h2 className="text-lg font-semibold text-white">{t('simulation.title')}</h2>
-          <p className="text-sm text-slate-300">{t('simulation.description')}</p>
+        <header className="space-y-1">
+          <h2 className="text-xl font-bold tracking-tight text-white">{t('simulation.title')}</h2>
+          <p className="text-sm text-slate-300/90">{t('simulation.description')}</p>
         </header>
 
         <div className="grid gap-6 md:grid-cols-2">
           <fieldset className="space-y-3">
-            <legend className="text-xs font-semibold uppercase tracking-wide text-slate-300">
+            <legend className="text-xs font-bold uppercase tracking-[0.2em] text-indigo-300/90">
               {t('simulation.assets')}
             </legend>
             <div className="grid gap-2">
               {availableAssets.map((asset) => (
                 <label
                   key={asset.symbol}
-                  className="flex items-center justify-between gap-4 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm shadow-sm"
+                  className="flex items-center justify-between gap-4 rounded-lg border border-slate-700/50 bg-slate-800/40 px-3 py-2 text-sm shadow-sm transition-colors hover:bg-slate-700/40"
                 >
                   <span className="flex flex-col">
-                    <span className="font-semibold text-white">{asset.symbol}</span>
-                    <span className="text-xs text-slate-300">{asset.name}</span>
+                    <span className="font-bold text-white">{asset.symbol}</span>
+                    <span className="text-xs text-slate-300/80">{asset.name}</span>
                   </span>
                   <input
                     type="checkbox"
                     checked={selectedAssets.includes(asset.symbol)}
                     onChange={() => toggleAsset(asset.symbol)}
                     disabled={isAssetDisabled(asset.symbol)}
-                    className="h-4 w-4"
+                    className="h-4 w-4 accent-indigo-500"
                   />
                 </label>
               ))}
@@ -144,22 +144,22 @@ export function SimulationControls({
           </fieldset>
 
           <div className="space-y-4">
-            <label className="flex flex-col gap-2 text-xs font-semibold uppercase tracking-wide text-slate-300">
+            <label className="flex flex-col gap-2 text-xs font-bold uppercase tracking-[0.2em] text-indigo-300/90">
               {t('simulation.range')}
               <select
                 value={range}
                 onChange={(event) => setRange(event.target.value as SimulationRange)}
-                className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/60"
+                className="rounded-lg border border-slate-700/50 bg-slate-800/60 px-3 py-2 text-sm font-bold text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/60"
               >
                 {rangeOptions.map((option) => (
-                  <option key={option} value={option}>
+                  <option key={option} value={option} className="bg-slate-900 text-white">
                     {rangeLabel(option)}
                   </option>
                 ))}
               </select>
             </label>
 
-            <label className="flex flex-col gap-2 text-xs font-semibold uppercase tracking-wide text-slate-300">
+            <label className="flex flex-col gap-2 text-xs font-bold uppercase tracking-[0.2em] text-indigo-300/90">
               {t('simulation.trials')}
               <input
                 type="number"
@@ -167,19 +167,19 @@ export function SimulationControls({
                 step={100}
                 value={trials}
                 onChange={(event) => setTrials(Number(event.target.value))}
-                className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/60"
+                className="rounded-lg border border-slate-700/50 bg-slate-800/60 px-3 py-2 text-sm font-bold text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/60"
               />
             </label>
 
-            <label className="flex flex-col gap-2 text-xs font-semibold uppercase tracking-wide text-slate-300">
+            <label className="flex flex-col gap-2 text-xs font-bold uppercase tracking-[0.2em] text-indigo-300/90">
               {t('simulation.rebalance')}
               <select
                 value={rebalance}
                 onChange={(event) => setRebalance(event.target.value as SimulationRebalance)}
-                className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/60"
+                className="rounded-lg border border-slate-700/50 bg-slate-800/60 px-3 py-2 text-sm font-bold text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/60"
               >
                 {rebalanceOptions.map((option) => (
-                  <option key={option} value={option}>
+                  <option key={option} value={option} className="bg-slate-900 text-white">
                     {rebalanceLabel(option)}
                   </option>
                 ))}
@@ -188,14 +188,14 @@ export function SimulationControls({
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between border-t border-slate-700/50 pt-6">
           <button
             type="submit"
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90"
+            className="rounded-lg bg-indigo-600 px-6 py-2 text-sm font-bold text-white shadow-lg shadow-indigo-900/40 transition hover:bg-indigo-500"
           >
             {t('simulation.apply')}
           </button>
-          {status ? <p className="text-xs text-slate-200">{status}</p> : null}
+          {status ? <p className="text-xs font-bold text-emerald-400">{status}</p> : null}
         </div>
       </div>
     </form>

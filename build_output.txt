@@ -1,0 +1,43 @@
+
+> asset-allocation-nextjs@1.0.0 build C:\Users\hartm\Desktop\asset-allocation-njs
+> next build
+
+   笆ｲ Next.js 16.0.10 (Turbopack)
+
+   Creating an optimized production build ...
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+ 笨・Compiled successfully in 14.0s
+   Running TypeScript ...
+   Collecting page data using 15 workers ...
+   Generating static pages using 15 workers (0/17) ...
+ 笞 metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+   Generating static pages using 15 workers (4/17) 
+   Generating static pages using 15 workers (8/17) 
+   Generating static pages using 15 workers (12/17) 
+ 笨・Generating static pages using 15 workers (17/17) in 4.7s
+   Finalizing page optimization ...
+
+Route (app)
+笏・笳・/
+笏・笳・/_not-found
+笏・ﾆ・/api/assets/search
+笏・ﾆ・/api/health
+笏・ﾆ・/api/market/[symbol]
+笏・ﾆ・/api/market/compare
+笏・ﾆ・/api/optimization
+笏・ﾆ・/api/portfolio
+笏・ﾆ・/api/portfolio/[id]
+笏・笳・/dashboard
+笏・笳・/dashboard/analysis
+笏・笳・/dashboard/portfolio
+笏・笳・/dashboard/settings
+笏・笳・/docs
+笏・笳・/docs/design
+笏・笳・/docs/getting-started
+笏・笳・/docs/requirements
+笏・笳・/icon.png
+
+
+笳・ (Static)   prerendered as static content
+ﾆ・ (Dynamic)  server-rendered on demand
+
