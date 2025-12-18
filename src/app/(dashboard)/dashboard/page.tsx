@@ -5,13 +5,10 @@ import { SectionCard } from '@/components/ui/section-card'
 
 import { useEffect, useMemo, useState } from 'react'
 import { PriceTrendChart } from '@/components/charts/price-trend-chart'
-import {
-  mockActivityLog,
-  mockAssetSummaries,
-  mockPerformanceMetrics,
-} from '@/lib/constants/mock-data'
+import { mockActivityLog } from '@/lib/constants/mock-data'
 import { useLocale } from '@/components/providers/locale-provider'
 import { usePortfolio } from '@/components/providers/portfolio-provider'
+import { useMarketData } from '@/lib/hooks/use-market-data'
 
 type RangeValue = '1y' | '3y' | '5y' | '10y' | 'max'
 
@@ -32,6 +29,7 @@ export default function DashboardHomePage() {
   const [selectedRange, setSelectedRange] = useState<RangeValue>('1y')
   const [isComparisonMode, setIsComparisonMode] = useState(false)
   const [selectedComparisons, setSelectedComparisons] = useState<string[]>([])
+  const [customSymbolInput, setCustomSymbolInput] = useState('')
 
   const assetOptions = useMemo(
     () =>
@@ -52,7 +50,7 @@ export default function DashboardHomePage() {
       return
     }
 
-    if (!assetOptions.find((option) => option.symbol === selectedAsset)) {
+    if (!selectedAsset) {
       setSelectedAsset(assetOptions[0].symbol)
     }
   }, [assetOptions, selectedAsset])
@@ -63,7 +61,7 @@ export default function DashboardHomePage() {
     )
   }, [assetOptions])
 
-  const chartSymbol = selectedAsset || assetOptions[0]?.symbol || 'VOO'
+  const chartSymbol = selectedAsset || assetOptions[0]?.symbol || ''
 
   useEffect(() => {
     setSelectedComparisons((prev) => prev.filter((symbol) => symbol !== chartSymbol))
@@ -93,59 +91,210 @@ export default function DashboardHomePage() {
     )
   }
 
+  const handleCustomSymbolApply = () => {
+    const next = customSymbolInput.trim()
+    if (!next) {
+      return
+    }
+
+    setSelectedAsset(next.toUpperCase())
+    setIsComparisonMode(false)
+    setSelectedComparisons([])
+  }
+
   const selectedAssetEntry = useMemo(
     () => portfolio.assets.find(({ asset }) => asset.symbol === selectedAsset),
     [portfolio.assets, selectedAsset],
   )
 
-  const assetSummary = useMemo(() => {
-    const fallback = {
-      name: selectedAssetEntry?.asset.name ?? selectedAsset,
-      allocation: selectedAssetEntry?.weight ?? 0,
-      expectedReturn: mockPerformanceMetrics.expectedReturn,
-      volatility: mockPerformanceMetrics.volatility,
-      sharpeRatio: mockPerformanceMetrics.sharpeRatio,
-      yearToDate: 0,
-      description: selectedAssetEntry
-        ? locale === 'ja'
-          ? `${selectedAssetEntry.asset.name} の詳細指標は後で設定できます。`
-          : `Detailed metrics for ${selectedAssetEntry.asset.name} can be configured later.`
-        : locale === 'ja'
-          ? 'データ準備中です。'
-          : 'Data will appear once configured.',
+  const {
+    data: assetPrices,
+    isLoading: assetPricesLoading,
+    error: assetPricesError,
+  } = useMarketData({ symbol: chartSymbol, range: selectedRange, interval: '1d' })
+
+  const assetMetrics = useMemo(() => {
+    if (!chartSymbol || !assetPrices?.length) return null
+
+    const sorted = [...assetPrices].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+    )
+
+    const closes = sorted.map((entry) => entry.close).filter((value) => Number.isFinite(value))
+    if (closes.length < 2) {
+      return null
     }
 
-    return selectedAsset ? { ...fallback, ...(mockAssetSummaries[selectedAsset] ?? {}) } : fallback
-  }, [locale, selectedAsset, selectedAssetEntry])
+    const firstClose = closes[0]
+    const lastClose = closes[closes.length - 1]
+
+    if (!firstClose || !lastClose) return null
+
+    const daySpan =
+      (new Date(sorted[sorted.length - 1].date).getTime() -
+        new Date(sorted[0].date).getTime()) /
+      (1000 * 60 * 60 * 24)
+    const years = Math.max(daySpan / 365, 0.25)
+    const cagr = Math.pow(lastClose / firstClose, 1 / years) - 1
+
+    const dailyReturns: number[] = []
+    for (let i = 1; i < closes.length; i += 1) {
+      const prev = closes[i - 1]
+      const current = closes[i]
+      if (!prev || !current) continue
+      dailyReturns.push(current / prev - 1)
+    }
+
+    const mean = dailyReturns.reduce((sum, value) => sum + value, 0) / dailyReturns.length
+    const variance =
+      dailyReturns.reduce((sum, value) => sum + (value - mean) ** 2, 0) / (dailyReturns.length || 1)
+    const volatility = Math.sqrt(variance) * Math.sqrt(252)
+
+    const sharpeRatio = volatility > 0 ? cagr / volatility : 0
+
+    const latestDate = new Date(sorted[sorted.length - 1].date)
+    const startOfYear = new Date(latestDate.getFullYear(), 0, 1)
+    const firstYtd = sorted.find((entry) => new Date(entry.date) >= startOfYear)
+    const yearToDate = firstYtd ? lastClose / firstYtd.close - 1 : 0
+
+    return {
+      cagr,
+      volatility,
+      sharpeRatio,
+      yearToDate,
+    }
+  }, [assetPrices, chartSymbol])
+
+  const assetSummary = useMemo(() => {
+    const allocation = selectedAssetEntry?.weight ?? 0
+
+    if (!chartSymbol) {
+      return {
+        name: locale === 'ja' ? '資産未選択' : 'No asset selected',
+        allocation,
+        expectedReturn: null,
+        volatility: null,
+        sharpeRatio: null,
+        yearToDate: null,
+        description:
+          locale === 'ja'
+            ? 'シンボルを入力するとリアルタイムデータを取得します。'
+            : 'Enter a symbol to load live data.',
+      }
+    }
+
+    if (assetPricesLoading) {
+      return {
+        name: selectedAssetEntry?.asset.name ?? chartSymbol,
+        allocation,
+        expectedReturn: null,
+        volatility: null,
+        sharpeRatio: null,
+        yearToDate: null,
+        description:
+          locale === 'ja'
+            ? '市場データを取得しています…'
+            : 'Fetching live market data…',
+      }
+    }
+
+    if (assetPricesError || !assetMetrics) {
+      return {
+        name: selectedAssetEntry?.asset.name ?? chartSymbol,
+        allocation,
+        expectedReturn: null,
+        volatility: null,
+        sharpeRatio: null,
+        yearToDate: null,
+        description:
+          assetPricesError && locale === 'ja'
+            ? '市場データの取得に失敗しました。シンボルやネットワーク設定を確認してください。'
+            : assetPricesError
+              ? 'Failed to fetch market data. Check the symbol or network settings.'
+              : locale === 'ja'
+                ? '十分な時系列データがないため指標を計算できませんでした。'
+                : 'Not enough price history to compute metrics.',
+      }
+    }
+
+    return {
+      name: selectedAssetEntry?.asset.name ?? chartSymbol,
+      allocation,
+      expectedReturn: assetMetrics.cagr,
+      volatility: assetMetrics.volatility,
+      sharpeRatio: assetMetrics.sharpeRatio,
+      yearToDate: assetMetrics.yearToDate,
+      description:
+        locale === 'ja'
+          ? 'Yahoo Finance の終値から算出しています。'
+          : 'Computed from Yahoo Finance closing prices.',
+    }
+  }, [
+    assetMetrics,
+    assetPricesError,
+    assetPricesLoading,
+    chartSymbol,
+    locale,
+    selectedAssetEntry,
+  ])
 
   const allocation = selectedAssetEntry?.weight ?? assetSummary.allocation ?? 0
 
   const metrics = useMemo(() => {
-    const ytdPercent = assetSummary.yearToDate * 100
+    const formatPercent = (value: number | null) => {
+      if (value === null) {
+        return assetPricesLoading ? (locale === 'ja' ? '計算中…' : 'Loading…') : 'N/A'
+      }
+
+      if (!Number.isFinite(value)) {
+        return 'N/A'
+      }
+
+      return `${(value * 100).toFixed(1)}%`
+    }
+
+    const ytdPercent =
+      typeof assetSummary.yearToDate === 'number' ? assetSummary.yearToDate * 100 : null
     const trend: 'up' | 'down' | 'neutral' =
-      ytdPercent === 0 ? 'neutral' : ytdPercent > 0 ? 'up' : 'down'
-    const formattedYtd = `${ytdPercent > 0 ? '+' : ''}${ytdPercent.toFixed(1)}%`
+      ytdPercent === null ? 'neutral' : ytdPercent === 0 ? 'neutral' : ytdPercent > 0 ? 'up' : 'down'
+    const formattedYtd =
+      ytdPercent === null
+        ? assetPricesLoading
+          ? locale === 'ja'
+            ? '計算中…'
+            : 'Loading…'
+          : 'N/A'
+        : `${ytdPercent > 0 ? '+' : ''}${ytdPercent.toFixed(1)}%`
 
     return [
       {
         title: '年率期待リターン',
-        value: `${(assetSummary.expectedReturn * 100).toFixed(1)}%`,
+        value: formatPercent(assetSummary.expectedReturn),
         change: { value: `YTD ${formattedYtd}`, trend },
       },
       {
         title: '年間ボラティリティ',
-        value: `${(assetSummary.volatility * 100).toFixed(1)}%`,
+        value: formatPercent(assetSummary.volatility),
       },
       {
         title: 'シャープレシオ',
-        value: assetSummary.sharpeRatio.toFixed(2),
+        value:
+          assetSummary.sharpeRatio === null
+            ? assetPricesLoading
+              ? locale === 'ja'
+                ? '計算中…'
+                : 'Loading…'
+              : 'N/A'
+            : assetSummary.sharpeRatio.toFixed(2),
       },
     ]
   }, [
+    assetPricesLoading,
     assetSummary.expectedReturn,
     assetSummary.sharpeRatio,
     assetSummary.volatility,
     assetSummary.yearToDate,
+    locale,
   ])
 
   const assetSelectorLabel = locale === 'ja' ? '資産' : 'Asset'
@@ -243,6 +392,30 @@ export default function DashboardHomePage() {
                 </option>
               ))}
             </select>
+          </label>
+          <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-300">
+            {locale === 'ja' ? 'シンボル入力' : 'Custom Symbol'}
+            <div className="flex items-center gap-2">
+              <input
+                value={customSymbolInput}
+                onChange={(event) => setCustomSymbolInput(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') {
+                    event.preventDefault()
+                    handleCustomSymbolApply()
+                  }
+                }}
+                placeholder={locale === 'ja' ? '例: AAPL' : 'e.g., AAPL'}
+                className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+              />
+              <button
+                type="button"
+                onClick={handleCustomSymbolApply}
+                className="rounded-lg border border-indigo-500 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:border-indigo-400 hover:bg-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/80"
+              >
+                {locale === 'ja' ? '適用' : 'Apply'}
+              </button>
+            </div>
           </label>
           <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-300">
             {rangeSelectorLabel}
@@ -355,7 +528,11 @@ export default function DashboardHomePage() {
                   年初来リターン
                 </dt>
                 <dd className="mt-1 font-bold text-white">
-                  {(assetSummary.yearToDate * 100).toFixed(1)}%
+                  {assetSummary.yearToDate === null
+                    ? assetPricesLoading
+                      ? '計算中…'
+                      : 'N/A'
+                    : `${(assetSummary.yearToDate * 100).toFixed(1)}%`}
                 </dd>
               </div>
             </dl>
