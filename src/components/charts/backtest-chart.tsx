@@ -35,6 +35,7 @@ export function BacktestChart({ series }: BacktestChartProps) {
       orientation: 'h',
       x: 0,
       y: -0.2,
+      font: { color: '#f8fafc' },
     },
   }
 

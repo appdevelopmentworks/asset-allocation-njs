@@ -70,6 +70,7 @@ export function EfficientFrontierChart({ points, optimalPoint }: EfficientFronti
       orientation: 'h',
       x: 0,
       y: -0.2,
+      font: { color: '#f8fafc' },
     },
   }
 

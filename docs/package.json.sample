@@ -2,7 +2,7 @@
   "name": "asset-allocation-nextjs",
   "version": "1.0.0",
   "private": true,
-  "description": "Modern portfolio optimization tool built with Next.js 15",
+  "description": "Modern portfolio optimization tool built with Next.js 16",
   "author": "Your Name <your.email@example.com>",
   "license": "MIT",
   "scripts": {

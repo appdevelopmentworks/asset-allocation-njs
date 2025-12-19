@@ -20,7 +20,7 @@ const features = [
 ]
 
 const highlights = [
-  'Next.js 15 App Router + TypeScriptで構築',
+  'Next.js 16 App Router + TypeScriptで構築',
   'TailwindCSSとshadcn/uiによる洗練されたUI',
   'ZustandとSWRで実現するスケーラブルな状態管理',
   'Supabase・Redisと連携した堅牢なバックエンド基盤',
@@ -54,7 +54,7 @@ export default function LandingPage() {
                 <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-primary ring-1 ring-primary/20">
                   <span>Asset Allocation Tool</span>
                   <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
-                  <span>Next.js 15</span>
+                  <span>Next.js 16</span>
                 </div>
                 <div className="space-y-4">
                   <h1 className="text-balance text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
@@ -167,7 +167,7 @@ export default function LandingPage() {
                 <span className="font-semibold text-foreground">1. プロジェクトセットアップ</span>
                 <p className="mt-2">
                   Next.js
-                  15、TailwindCSS、shadcn/ui、Zustandなどドキュメントで定義された開発環境を構築します。
+                  16、TailwindCSS、shadcn/ui、Zustandなどドキュメントで定義された開発環境を構築します。
                 </p>
               </li>
               <li>

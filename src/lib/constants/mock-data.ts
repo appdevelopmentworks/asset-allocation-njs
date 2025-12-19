@@ -23,8 +23,8 @@ export const mockPortfolio: Portfolio = {
         exchange: 'NYSE',
         currency: 'USD',
       },
-      weight: 0.45,
-      value: 45000,
+      weight: 0.36,
+      value: 36000,
     },
     {
       asset: {
@@ -35,8 +35,20 @@ export const mockPortfolio: Portfolio = {
         exchange: 'NASDAQ',
         currency: 'USD',
       },
-      weight: 0.2,
-      value: 20000,
+      weight: 0.18,
+      value: 18000,
+    },
+    {
+      asset: {
+        id: 'asset-vnq',
+        symbol: 'VNQ',
+        name: 'Vanguard Real Estate ETF',
+        type: 'etf',
+        exchange: 'NYSE',
+        currency: 'USD',
+      },
+      weight: 0.09,
+      value: 9000,
     },
     {
       asset: {
@@ -47,8 +59,8 @@ export const mockPortfolio: Portfolio = {
         exchange: 'NYSE',
         currency: 'USD',
       },
-      weight: 0.15,
-      value: 15000,
+      weight: 0.12,
+      value: 12000,
     },
     {
       asset: {
@@ -59,8 +71,8 @@ export const mockPortfolio: Portfolio = {
         exchange: 'NASDAQ',
         currency: 'USD',
       },
-      weight: 0.12,
-      value: 12000,
+      weight: 0.1,
+      value: 10000,
     },
     {
       asset: {
@@ -73,6 +85,18 @@ export const mockPortfolio: Portfolio = {
       },
       weight: 0.08,
       value: 8000,
+    },
+    {
+      asset: {
+        id: 'asset-n225',
+        symbol: '^N225',
+        name: 'Nikkei 225 Index',
+        type: 'index',
+        exchange: 'TSE',
+        currency: 'JPY',
+      },
+      weight: 0.07,
+      value: 7000,
     },
   ],
 }
@@ -109,7 +133,7 @@ export const mockAssetSummaries: Record<
   },
   VXUS: {
     name: 'Vanguard Total International Stock ETF',
-    allocation: 0.2,
+    allocation: 0.18,
     expectedReturn: 0.102,
     volatility: 0.156,
     sharpeRatio: 1.12,
@@ -117,9 +141,19 @@ export const mockAssetSummaries: Record<
     description:
       '米国外の株式市場へ投資し、地域分散を実現。為替リスクがボラティリティ要因になります。',
   },
+  VNQ: {
+    name: 'Vanguard Real Estate ETF',
+    allocation: 0.09,
+    expectedReturn: 0.082,
+    volatility: 0.175,
+    sharpeRatio: 0.96,
+    yearToDate: 0.052,
+    description:
+      '米国リート指数に連動する不動産セクターETF。インカムとインフレヘッジの両面を担います。',
+  },
   GLD: {
     name: 'SPDR Gold Shares',
-    allocation: 0.15,
+    allocation: 0.12,
     expectedReturn: 0.058,
     volatility: 0.19,
     sharpeRatio: 0.78,
@@ -129,7 +163,7 @@ export const mockAssetSummaries: Record<
   },
   BND: {
     name: 'Vanguard Total Bond Market ETF',
-    allocation: 0.12,
+    allocation: 0.1,
     expectedReturn: 0.042,
     volatility: 0.055,
     sharpeRatio: 0.92,
@@ -146,6 +180,15 @@ export const mockAssetSummaries: Record<
     yearToDate: 0.184,
     description:
       '暗号資産ビットコイン。リスクは高いが高リターンを狙うサテライト資産として活用しています。',
+  },
+  '^N225': {
+    name: 'Nikkei 225 Index',
+    allocation: 0.07,
+    expectedReturn: 0.094,
+    volatility: 0.165,
+    sharpeRatio: 0.98,
+    yearToDate: 0.072,
+    description: '日本の代表的な株価指数。円建て資産として地域分散と為替エクスポージャーを提供します。',
   },
 }
 
@@ -177,17 +220,19 @@ export const mockActivityLog = [
 export const mockOptimizationSummaries = [
   {
     strategy: 'max_sharpe' as const,
-    expectedReturn: 0.124,
-    risk: 0.087,
-    sharpeRatio: 1.42,
+    expectedReturn: 0.126,
+    risk: 0.089,
+    sharpeRatio: 1.41,
     description:
       'リスクに対するリターン効率を最大化。株式とコモディティのバランスが最適化されました。',
     weights: [
-      { symbol: 'VOO', weight: 0.38 },
-      { symbol: 'VXUS', weight: 0.18 },
-      { symbol: 'GLD', weight: 0.12 },
-      { symbol: 'BND', weight: 0.17 },
-      { symbol: 'BTC-USD', weight: 0.15 },
+      { symbol: 'VOO', weight: 0.32 },
+      { symbol: 'VXUS', weight: 0.15 },
+      { symbol: 'VNQ', weight: 0.1 },
+      { symbol: 'GLD', weight: 0.1 },
+      { symbol: 'BND', weight: 0.13 },
+      { symbol: 'BTC-USD', weight: 0.08 },
+      { symbol: '^N225', weight: 0.12 },
     ],
   },
   {
@@ -197,26 +242,30 @@ export const mockOptimizationSummaries = [
     sharpeRatio: 1.18,
     description: '安定性重視の低ボラティリティ構成。債券と金の比率を増やし、防御力を高めています。',
     weights: [
-      { symbol: 'VOO', weight: 0.22 },
-      { symbol: 'VXUS', weight: 0.12 },
-      { symbol: 'GLD', weight: 0.28 },
-      { symbol: 'BND', weight: 0.32 },
-      { symbol: 'BTC-USD', weight: 0.06 },
+      { symbol: 'VOO', weight: 0.18 },
+      { symbol: 'VXUS', weight: 0.1 },
+      { symbol: 'VNQ', weight: 0.14 },
+      { symbol: 'GLD', weight: 0.2 },
+      { symbol: 'BND', weight: 0.25 },
+      { symbol: 'BTC-USD', weight: 0.03 },
+      { symbol: '^N225', weight: 0.1 },
     ],
   },
   {
     strategy: 'max_return' as const,
-    expectedReturn: 0.168,
-    risk: 0.125,
-    sharpeRatio: 1.34,
+    expectedReturn: 0.172,
+    risk: 0.129,
+    sharpeRatio: 1.33,
     description:
       '期待リターン最大化。暗号資産と株式の比率が高く、ハイリスク・ハイリターン戦略です。',
     weights: [
-      { symbol: 'VOO', weight: 0.42 },
-      { symbol: 'VXUS', weight: 0.16 },
-      { symbol: 'GLD', weight: 0.09 },
-      { symbol: 'BND', weight: 0.08 },
-      { symbol: 'BTC-USD', weight: 0.25 },
+      { symbol: 'VOO', weight: 0.34 },
+      { symbol: 'VXUS', weight: 0.12 },
+      { symbol: 'VNQ', weight: 0.06 },
+      { symbol: 'GLD', weight: 0.08 },
+      { symbol: 'BND', weight: 0.05 },
+      { symbol: 'BTC-USD', weight: 0.2 },
+      { symbol: '^N225', weight: 0.15 },
     ],
   },
   {
@@ -239,13 +288,15 @@ export const mockEfficientFrontier = [
 export const mockOptimalPoint = { risk: 0.087, expectedReturn: 0.124 }
 
 export const mockCorrelationMatrix = {
-  symbols: ['VOO', 'VXUS', 'GLD', 'BND', 'BTC-USD'],
+  symbols: ['VOO', 'VXUS', 'VNQ', 'GLD', 'BND', 'BTC-USD', '^N225'],
   matrix: [
-    [1, 0.74, 0.18, 0.32, 0.12],
-    [0.74, 1, 0.15, 0.28, 0.1],
-    [0.18, 0.15, 1, -0.12, 0.25],
-    [0.32, 0.28, -0.12, 1, -0.08],
-    [0.12, 0.1, 0.25, -0.08, 1],
+    [1, 0.72, 0.65, 0.18, 0.3, 0.12, 0.55],
+    [0.72, 1, 0.58, 0.15, 0.28, 0.1, 0.48],
+    [0.65, 0.58, 1, 0.12, 0.22, 0.08, 0.35],
+    [0.18, 0.15, 0.12, 1, -0.1, 0.2, 0.05],
+    [0.3, 0.28, 0.22, -0.1, 1, -0.05, 0.18],
+    [0.12, 0.1, 0.08, 0.2, -0.05, 1, 0.06],
+    [0.55, 0.48, 0.35, 0.05, 0.18, 0.06, 1],
   ],
 }
 

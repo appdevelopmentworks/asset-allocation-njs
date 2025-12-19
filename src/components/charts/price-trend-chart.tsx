@@ -170,7 +170,7 @@ export function PriceTrendChart({ symbols, range = '3y', interval = '1d' }: Pric
       orientation: 'h',
       x: 0,
       y: -0.2,
-      font: { color: '#0f172a' },
+      font: { color: '#f8fafc' },
     },
     hovermode: 'x unified' as const,
   }

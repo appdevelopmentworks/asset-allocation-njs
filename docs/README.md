@@ -1,6 +1,6 @@
-# Asset Allocation Tool - Next.js 15
+# Asset Allocation Tool - Next.js 16
 
-A modern portfolio optimization application built with Next.js 15, featuring real-time market data, advanced portfolio analysis, and responsive design.
+A modern portfolio optimization application built with Next.js 16, featuring real-time market data, advanced portfolio analysis, and responsive design.
 
 ## 🚀 Features
 
@@ -9,13 +9,13 @@ A modern portfolio optimization application built with Next.js 15, featuring rea
 - **Efficient Frontier**: Interactive visualization of risk-return tradeoffs
 - **Mobile-First**: Fully responsive design with touch gestures
 - **Dark Mode**: System-aware theme switching
-- **Performance**: Optimized with Next.js 15 App Router
+- **Performance**: Optimized with Next.js 16 App Router
 
 ## 🛠 Tech Stack
 
 ### Frontend
 
-- **Framework**: Next.js 15 (App Router)
+- **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript 5.3
 - **Styling**: TailwindCSS + shadcn/ui
 - **Animations**: Framer Motion
@@ -40,7 +40,7 @@ A modern portfolio optimization application built with Next.js 15, featuring rea
 
 ```
 asset-allocation-nextjs/
-├── app/                    # Next.js 15 App Router
+├── app/                    # Next.js 16 App Router
 │   ├── (dashboard)/       # Dashboard routes
 │   ├── api/              # API routes
 │   └── layout.tsx        # Root layout
@@ -234,4 +234,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-Built with ❤️ using Next.js 15
+Built with ❤️ using Next.js 16
