@@ -23,6 +23,11 @@ const rangeOptions: Array<{ value: RangeValue; label: string }> = [
 const glassPanel =
   'relative overflow-hidden rounded-xl border border-slate-700/50 bg-gradient-to-br from-slate-800/95 via-slate-850/95 to-slate-900/95 shadow-2xl shadow-black/50 backdrop-blur-sm'
 
+const presetAssetOptions = [
+  { symbol: 'VNQ', label: 'VNQ · Vanguard Real Estate ETF' },
+  { symbol: '^N225', label: '^N225 · Nikkei 225 Index' },
+]
+
 export default function DashboardHomePage() {
   const { t, locale } = useLocale()
   const { portfolio } = usePortfolio()
@@ -31,14 +36,17 @@ export default function DashboardHomePage() {
   const [selectedComparisons, setSelectedComparisons] = useState<string[]>([])
   const [customSymbolInput, setCustomSymbolInput] = useState('')
 
-  const assetOptions = useMemo(
-    () =>
-      portfolio.assets.map(({ asset }) => ({
-        symbol: asset.symbol,
-        label: `${asset.symbol} · ${asset.name}`,
-      })),
-    [portfolio.assets],
-  )
+  const assetOptions = useMemo(() => {
+    const baseOptions = portfolio.assets.map(({ asset }) => ({
+      symbol: asset.symbol,
+      label: `${asset.symbol} · ${asset.name}`,
+    }))
+
+    const seen = new Set(baseOptions.map((option) => option.symbol))
+    const extras = presetAssetOptions.filter((option) => !seen.has(option.symbol))
+
+    return [...baseOptions, ...extras]
+  }, [portfolio.assets])
 
   const [selectedAsset, setSelectedAsset] = useState(
     assetOptions[0]?.symbol ?? portfolio.assets[0]?.asset.symbol ?? '',
@@ -373,77 +381,81 @@ export default function DashboardHomePage() {
     <div className="relative space-y-8 overflow-hidden">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_15%_20%,rgba(56,189,248,0.12),transparent_30%),radial-gradient(circle_at_85%_10%,rgba(236,72,153,0.1),transparent_28%),radial-gradient(circle_at_40%_80%,rgba(94,234,212,0.12),transparent_28%)]" />
       <div className="pointer-events-none absolute inset-0 -z-20 bg-gradient-to-b from-slate-950 via-slate-950/92 to-slate-950/80" />
-      <header className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-white">{t('dashboard.overview.title')}</h1>
-          <p className="text-sm text-slate-300">{t('dashboard.overview.subtitle')}</p>
-        </div>
-        <div className="flex flex-wrap gap-4">
-          <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-300">
-            {assetSelectorLabel}
-            <select
-              value={selectedAsset}
-              onChange={(event) => setSelectedAsset(event.target.value)}
-              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-            >
-              {assetOptions.map((option) => (
-                <option key={option.symbol} value={option.symbol} className="bg-slate-900">
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-300">
-            {locale === 'ja' ? 'シンボル入力' : 'Custom Symbol'}
-            <div className="flex items-center gap-2">
-              <input
-                value={customSymbolInput}
-                onChange={(event) => setCustomSymbolInput(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter') {
-                    event.preventDefault()
-                    handleCustomSymbolApply()
-                  }
-                }}
-                placeholder={locale === 'ja' ? '例: AAPL' : 'e.g., AAPL'}
-                className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-              />
-              <button
-                type="button"
-                onClick={handleCustomSymbolApply}
-                className="rounded-lg border border-indigo-500 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:border-indigo-400 hover:bg-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/80"
-              >
-                {locale === 'ja' ? '適用' : 'Apply'}
-              </button>
+      <header className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
+        <div className="flex flex-1 flex-col gap-6">
+          <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold text-white">{t('dashboard.overview.title')}</h1>
+              <p className="max-w-2xl text-sm text-slate-300">{t('dashboard.overview.subtitle')}</p>
             </div>
-          </label>
-          <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-300">
-            {rangeSelectorLabel}
-            <select
-              value={selectedRange}
-              onChange={(event) => setSelectedRange(event.target.value as RangeValue)}
-              className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-            >
-              {rangeOptions.map((option) => (
-                <option key={option.value} value={option.value} className="bg-slate-900">
-                  {rangeLabelText(option.value)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-300">
-            {comparisonToggleLabel}
-            <input
-              type="checkbox"
-              checked={isComparisonMode}
-              onChange={(event) => handleComparisonToggle(event.target.checked)}
-              className="h-4 w-4 accent-indigo-500"
-              disabled={!comparisonCandidates.length}
-            />
-          </label>
+            <div className="flex flex-wrap items-end gap-4">
+              <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wider text-indigo-300">
+                {assetSelectorLabel}
+                <select
+                  value={selectedAsset}
+                  onChange={(event) => setSelectedAsset(event.target.value)}
+                  className="h-10 w-72 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                >
+                  {assetOptions.map((option) => (
+                    <option key={option.symbol} value={option.symbol} className="bg-slate-900">
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wider text-indigo-300">
+                {locale === 'ja' ? 'シンボル入力' : 'Custom Symbol'}
+                <div className="flex h-10 items-center gap-2">
+                  <input
+                    value={customSymbolInput}
+                    onChange={(event) => setCustomSymbolInput(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        event.preventDefault()
+                        handleCustomSymbolApply()
+                      }
+                    }}
+                    placeholder={locale === 'ja' ? '例: AAPL' : 'e.g., AAPL'}
+                    className="h-full w-32 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleCustomSymbolApply}
+                    className="h-full rounded-lg border border-indigo-500 bg-indigo-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:border-indigo-400 hover:bg-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/80"
+                  >
+                    {locale === 'ja' ? '適用' : 'Apply'}
+                  </button>
+                </div>
+              </label>
+              <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wider text-indigo-300">
+                {rangeSelectorLabel}
+                <select
+                  value={selectedRange}
+                  onChange={(event) => setSelectedRange(event.target.value as RangeValue)}
+                  className="h-10 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                >
+                  {rangeOptions.map((option) => (
+                    <option key={option.value} value={option.value} className="bg-slate-900">
+                      {rangeLabelText(option.value)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-300">
+                <input
+                  type="checkbox"
+                  checked={isComparisonMode}
+                  onChange={(event) => handleComparisonToggle(event.target.checked)}
+                  className="h-4 w-4 accent-indigo-500"
+                  disabled={!comparisonCandidates.length}
+                />
+                {comparisonToggleLabel}
+              </label>
+            </div>
+          </div>
         </div>
         {isComparisonMode ? (
-          <div className="w-full space-y-3 rounded-lg border border-slate-700 bg-slate-800/50 p-4">
+          <div className="w-full shrink-0 space-y-3 rounded-lg border border-slate-700 bg-slate-800/50 p-4 lg:w-72">
             <div className="flex flex-col gap-1">
               <p className="text-xs font-bold uppercase tracking-wider text-indigo-300">
                 {comparisonLabel}
@@ -451,7 +463,7 @@ export default function DashboardHomePage() {
               <p className="text-xs text-slate-300">{comparisonHelperText}</p>
             </div>
             {comparisonCandidates.length ? (
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1">
                 {comparisonCandidates.map((option) => {
                   const isSelected = selectedComparisons.includes(option.symbol)
                   return (
@@ -459,11 +471,11 @@ export default function DashboardHomePage() {
                       key={option.symbol}
                       title={option.label}
                       className={`flex items-center justify-between gap-3 rounded-lg border px-3 py-2 text-xs transition ${isSelected
-                          ? 'border-indigo-500 bg-indigo-500/20 text-indigo-200'
-                          : 'border-slate-700 bg-slate-800 text-white'
+                        ? 'border-indigo-500 bg-indigo-500/20 text-indigo-200'
+                        : 'border-slate-700 bg-slate-800 text-white'
                         }`}
                     >
-                      <span className="text-sm font-semibold">{option.symbol}</span>
+                      <span className="truncate text-sm font-semibold">{option.symbol}</span>
                       <input
                         type="checkbox"
                         checked={isSelected}
@@ -475,7 +487,7 @@ export default function DashboardHomePage() {
                 })}
               </div>
             ) : (
-              <p className="rounded border border-dashed border-muted bg-muted/20 px-3 py-2 text-xs text-muted-foreground">
+              <p className="rounded border border-dashed border-slate-700 bg-slate-800/50 px-3 py-2 text-xs text-slate-400">
                 {comparisonEmptyText}
               </p>
             )}
