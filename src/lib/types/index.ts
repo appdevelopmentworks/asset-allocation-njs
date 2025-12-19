@@ -1,4 +1,4 @@
-export type AssetType = 'stock' | 'etf' | 'bond' | 'commodity' | 'crypto' | 'reit'
+export type AssetType = 'stock' | 'etf' | 'bond' | 'commodity' | 'crypto' | 'reit' | 'index'
 
 export type OptimizationStrategy = 'max_sharpe' | 'min_variance' | 'max_return' | 'risk_parity'
 
