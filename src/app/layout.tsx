@@ -1,7 +1,14 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { LocaleProvider } from '@/components/providers/locale-provider'
 import { PortfolioProvider } from '@/components/providers/portfolio-provider'
 import './globals.css'
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: '#0f172a',
+}
 
 const appTitle = 'Asset Allocation Tool'
 const appDescription =

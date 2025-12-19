@@ -70,7 +70,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
       <DashboardHeader onToggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 md:flex-row md:gap-8 md:px-6 md:py-10">
         <DashboardSidebar className="hidden md:block md:w-56 md:shrink-0" />
-        <main className="flex-1 pb-16">{children}</main>
+        <main className="flex-1 pb-[calc(4rem+env(safe-area-inset-bottom))]">{children}</main>
       </div>
 
       <div
