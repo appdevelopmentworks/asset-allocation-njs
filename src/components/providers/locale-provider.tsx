@@ -15,16 +15,14 @@ const LocaleContext = createContext<LocaleContextValue | null>(null)
 const LOCALE_STORAGE_KEY = 'asset-allocation:locale'
 
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocale] = useState<Locale>(() => {
-    if (typeof window === 'undefined') {
-      return defaultLocale
-    }
+  const [locale, setLocale] = useState<Locale>(defaultLocale)
+
+  useEffect(() => {
     const stored = window.localStorage.getItem(LOCALE_STORAGE_KEY)
     if (stored === 'ja' || stored === 'en') {
-      return stored
+      setLocale(stored)
     }
-    return defaultLocale
-  })
+  }, [])
 
   useEffect(() => {
     window.localStorage.setItem(LOCALE_STORAGE_KEY, locale)
