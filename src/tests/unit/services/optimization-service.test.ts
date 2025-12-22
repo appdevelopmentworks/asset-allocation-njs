@@ -28,7 +28,11 @@ describe('optimization-service', () => {
           acc[symbol] = Array(12).fill(0.01)
           return acc
         }, {}),
-        meta: { source: 'external', fromCache: false, range: range ?? '5Y' },
+        meta: {
+          source: 'external' as const,
+          fromCache: false,
+          range: range ?? '5Y',
+        },
       })),
     }
 

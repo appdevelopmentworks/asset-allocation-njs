@@ -235,7 +235,15 @@ export default function PortfolioPage() {
     [filteredAssets],
   )
 
-  const displayedAllocations = useMemo(() => {
+  const displayedAllocations = useMemo<
+    Array<{
+      symbol: string
+      name: string
+      weight: number
+      value?: number
+      asset?: Portfolio['assets'][number]['asset']
+    }>
+  >(() => {
     if (selectedSummary?.weights?.length) {
       const filteredWeights = selectedSummary.weights.filter((entry) =>
         selectedSymbols.includes(entry.symbol),
@@ -244,9 +252,11 @@ export default function PortfolioPage() {
       return filteredWeights.map((entry) => {
         const asset = symbolLookup.get(entry.symbol)
         const normalizedWeight = totalWeight ? entry.weight / totalWeight : 0
+        const entryName =
+          'name' in entry && typeof entry.name === 'string' ? entry.name : undefined
         return {
           symbol: entry.symbol,
-          name: ('name' in entry ? entry.name : undefined) ?? asset?.name ?? entry.symbol,
+          name: entryName ?? asset?.name ?? entry.symbol,
           weight: normalizedWeight,
           value: selectedPortfolioValue * normalizedWeight,
           asset,

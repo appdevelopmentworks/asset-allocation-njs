@@ -13,22 +13,6 @@ let GET: typeof import('@/app/api/optimization/route').GET
 let POST: typeof import('@/app/api/optimization/route').POST
 
 beforeAll(async () => {
-  const {
-    Request: NodeRequest,
-    Response: NodeResponse,
-    Headers: NodeHeaders,
-  } = await import('undici')
-
-  if (typeof globalThis.Request === 'undefined') {
-    globalThis.Request = NodeRequest as typeof Request
-  }
-  if (typeof globalThis.Response === 'undefined') {
-    globalThis.Response = NodeResponse as typeof Response
-  }
-  if (typeof globalThis.Headers === 'undefined') {
-    globalThis.Headers = NodeHeaders as typeof Headers
-  }
-
   const route = await import('@/app/api/optimization/route')
   GET = route.GET
   POST = route.POST

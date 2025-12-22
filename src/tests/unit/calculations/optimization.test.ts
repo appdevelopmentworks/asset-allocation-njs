@@ -12,7 +12,6 @@ describe('Portfolio Optimization', () => {
     [0.015, -0.005, 0.02, 0.01],
     [0.005, 0.01, 0.015, -0.01],
   ]
-
   describe('optimizeMaxSharpe', () => {
     it('returns normalized weights', () => {
       const weights = optimizeMaxSharpe(mockReturns)
@@ -51,19 +50,19 @@ describe('Portfolio Optimization', () => {
       })
     })
   })
-})
-describe('optimizeMaxReturn', () => {
-  it('prioritizes assets with higher expected returns', () => {
-    const weights = optimizeMaxReturn(mockReturns)
-    expect(weights).toHaveLength(3)
-    expect(weights.reduce((sum, weight) => sum + weight, 0)).toBeCloseTo(1, 6)
-    expect(weights[0]).toBeGreaterThan(weights[1])
-    expect(weights[1]).toBeGreaterThan(weights[2])
-  })
+  describe('optimizeMaxReturn', () => {
+    it('prioritizes assets with higher expected returns', () => {
+      const weights = optimizeMaxReturn(mockReturns)
+      expect(weights).toHaveLength(3)
+      expect(weights.reduce((sum, weight) => sum + weight, 0)).toBeCloseTo(1, 6)
+      expect(weights[0]).toBeGreaterThan(weights[1])
+      expect(weights[1]).toBeGreaterThan(weights[2])
+    })
 
-  it('respects allocation constraints', () => {
-    const weights = optimizeMaxReturn(mockReturns, { minWeight: 0.2, maxWeight: 0.5 })
-    expect(weights.every((weight) => weight >= 0.2 && weight <= 0.5)).toBe(true)
-    expect(weights.reduce((sum, weight) => sum + weight, 0)).toBeCloseTo(1, 6)
+    it('respects allocation constraints', () => {
+      const weights = optimizeMaxReturn(mockReturns, { minWeight: 0.2, maxWeight: 0.5 })
+      expect(weights.every((weight) => weight >= 0.2 && weight <= 0.5)).toBe(true)
+      expect(weights.reduce((sum, weight) => sum + weight, 0)).toBeCloseTo(1, 6)
+    })
   })
 })
