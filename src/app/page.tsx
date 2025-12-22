@@ -73,10 +73,10 @@ export default function LandingPage() {
                     ダッシュボードを見る
                   </Link>
                   <Link
-                    href="/docs/getting-started"
+                    href="/manual"
                     className="inline-flex items-center justify-center rounded-lg border border-primary/40 bg-background/60 px-6 py-3 text-sm font-semibold text-foreground shadow-sm transition hover:border-primary/80 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
                   >
-                    ドキュメントを確認
+                    ユーザー マニュアル
                   </Link>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">

@@ -8,35 +8,16 @@ import { PortfolioEditor } from '@/components/forms/portfolio-editor'
 import { ReportExportButton } from '@/components/ui/report-export-button'
 import { AllocationPieChart } from '@/components/charts/allocation-pie-chart'
 import { useOptimization } from '@/lib/hooks/use-optimization'
-import { mockOptimizationSummaries, mockPerformanceMetrics } from '@/lib/constants/mock-data'
+import {
+  mockOptimizationSummaries,
+  mockOptimizationSummaryDescriptions,
+  mockPerformanceMetrics,
+  mockPortfolioLabels,
+} from '@/lib/constants/mock-data'
 import type { OptimizationStrategy, Portfolio } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { useLocale } from '@/components/providers/locale-provider'
 import { usePortfolio } from '@/components/providers/portfolio-provider'
-
-const strategyOptions: Array<{ value: OptimizationStrategy; label: string; description: string }> =
-  [
-    {
-      value: 'max_sharpe',
-      label: '最大シャープレシオ',
-      description: 'リスクに対するリターン効率を最大化します。',
-    },
-    {
-      value: 'min_variance',
-      label: '最小分散',
-      description: 'ボラティリティを抑え、安定性を最優先します。',
-    },
-    {
-      value: 'max_return',
-      label: '最大リターン',
-      description: 'リスク許容度を高め、リターン最大化を狙います。',
-    },
-    {
-      value: 'risk_parity',
-      label: 'リスクパリティ',
-      description: 'リスク寄与度を均等化して資産クラスの偏りを抑えます。',
-    },
-  ]
 
 const totalValue = (portfolio: Portfolio) =>
   portfolio.assets.reduce((sum, asset) => sum + (asset.value ?? 0), 0)
@@ -45,15 +26,191 @@ const glassPanel =
   'relative overflow-hidden rounded-xl border border-slate-700/50 bg-gradient-to-br from-slate-800/95 via-slate-850/95 to-slate-900/95 shadow-2xl shadow-black/50 backdrop-blur-sm'
 
 export default function PortfolioPage() {
-  const { locale } = useLocale()
+  const { locale, t } = useLocale()
   const { portfolio, replacePortfolio, resetPortfolio, simulation, setSimulation } = usePortfolio()
   const [selectedStrategy, setSelectedStrategy] = useState<OptimizationStrategy>('max_sharpe')
+  const displayPortfolioName = useMemo(() => {
+    if (
+      portfolio.name === mockPortfolioLabels.ja.name ||
+      portfolio.name === mockPortfolioLabels.en.name
+    ) {
+      return mockPortfolioLabels[locale].name
+    }
+    return portfolio.name
+  }, [locale, portfolio.name])
+  const text =
+    locale === 'ja'
+      ? {
+          assetCount: '資産',
+          sharpeLabel: 'シャープレシオ',
+          metrics: {
+            portfolioValue: 'ポートフォリオ評価額',
+            expectedReturn: '期待リターン',
+            volatility: 'ボラティリティ',
+            sharpe: 'シャープレシオ',
+          },
+          allocation: {
+            title: '資産配分',
+            descriptionDefault: '現在のポートフォリオに保存されている配分です。',
+            descriptionOptimizedSuffix: 'の推奨配分です。',
+            table: {
+              ticker: 'ティッカー',
+              name: '名称',
+              weight: '配分',
+              value: '評価額 (USD)',
+            },
+          },
+          optimization: {
+            title: '最適化シナリオ',
+            description:
+              '最大シャープレシオ、最小分散、最大リターンの3つのシナリオを比較します。',
+            strategyLabel: '最適化戦略を選択',
+            summaryTitleSuffix: 'の概要',
+            missing: '選択した戦略のデータが見つかりません。別の戦略をお試しください。',
+            lastUpdated: '最終更新',
+          },
+          settings: {
+            title: '設定概要',
+            description:
+              'リバランス頻度や配当再投資など、ポートフォリオの基本設定です。設定画面で編集可能になる予定です。',
+            logReturns: '対数リターン',
+            logReturnsEnabled: '使用する',
+            logReturnsDisabled: '使用しない',
+            currency: '通貨',
+            rebalance: 'リバランス',
+            rebalanceValue: '四半期ごと',
+            dividend: '配当再投資',
+            dividendValue: '有効',
+          },
+        }
+      : {
+          assetCount: 'assets',
+          sharpeLabel: 'Sharpe Ratio',
+          metrics: {
+            portfolioValue: 'Portfolio Value',
+            expectedReturn: 'Expected Return',
+            volatility: 'Volatility',
+            sharpe: 'Sharpe Ratio',
+          },
+          allocation: {
+            title: 'Asset Allocation',
+            descriptionDefault: 'Allocation currently saved in the portfolio.',
+            descriptionOptimizedSuffix: ' recommended allocation.',
+            table: {
+              ticker: 'Ticker',
+              name: 'Name',
+              weight: 'Weight',
+              value: 'Value (USD)',
+            },
+          },
+          optimization: {
+            title: 'Optimization Scenarios',
+            description:
+              'Compare maximum Sharpe, minimum variance, and maximum return scenarios.',
+            strategyLabel: 'Select Optimization Strategy',
+            summaryTitleSuffix: ' summary',
+            missing: 'No data for the selected strategy. Try another option.',
+            lastUpdated: 'Last updated',
+          },
+          settings: {
+            title: 'Settings Overview',
+            description:
+              'Key portfolio settings such as rebalance frequency and dividend reinvestment. Editing will be available in Settings.',
+            logReturns: 'Log Returns',
+            logReturnsEnabled: 'Enabled',
+            logReturnsDisabled: 'Disabled',
+            currency: 'Currency',
+            rebalance: 'Rebalance',
+            rebalanceValue: 'Quarterly',
+            dividend: 'Dividend Reinvestment',
+            dividendValue: 'Enabled',
+          },
+        }
+  const strategyOptions: Array<{ value: OptimizationStrategy; label: string; description: string }> =
+    locale === 'ja'
+      ? [
+          {
+            value: 'max_sharpe',
+            label: '最大シャープレシオ',
+            description: 'リスクに対するリターン効率を最大化します。',
+          },
+          {
+            value: 'min_variance',
+            label: '最小分散',
+            description: 'ボラティリティを抑え、安定性を最優先します。',
+          },
+          {
+            value: 'max_return',
+            label: '最大リターン',
+            description: 'リスク許容度を高め、リターン最大化を狙います。',
+          },
+          {
+            value: 'risk_parity',
+            label: 'リスクパリティ',
+            description: 'リスク寄与度を均等化して資産クラスの偏りを抑えます。',
+          },
+        ]
+      : [
+          {
+            value: 'max_sharpe',
+            label: 'Max Sharpe',
+            description: 'Maximize risk-adjusted return efficiency.',
+          },
+          {
+            value: 'min_variance',
+            label: 'Minimum Variance',
+            description: 'Prioritize stability by reducing volatility.',
+          },
+          {
+            value: 'max_return',
+            label: 'Max Return',
+            description: 'Aim for higher returns with more risk.',
+          },
+          {
+            value: 'risk_parity',
+            label: 'Risk Parity',
+            description: 'Balance risk contribution across asset classes.',
+          },
+        ]
+  const selectedSymbols = useMemo(() => {
+    const availableSymbols = portfolio.assets.map(({ asset }) => asset.symbol)
+    const filtered =
+      simulation?.assets?.filter((symbol) => availableSymbols.includes(symbol)) ?? []
+    return filtered.length ? filtered : availableSymbols
+  }, [portfolio.assets, simulation?.assets])
+  const filteredAssets = useMemo(
+    () => portfolio.assets.filter(({ asset }) => selectedSymbols.includes(asset.symbol)),
+    [portfolio.assets, selectedSymbols],
+  )
+  const filteredPortfolio = useMemo(
+    () => ({
+      ...portfolio,
+      assets: filteredAssets,
+    }),
+    [filteredAssets, portfolio],
+  )
   const { summaries, summary, isLoading, error, meta, refresh } = useOptimization({
     strategy: selectedStrategy,
-    portfolio,
+    portfolio: filteredPortfolio,
   })
 
   const optimizationSummaries = summaries?.length ? summaries : mockOptimizationSummaries
+  const optimizationDescriptionOverrides = mockOptimizationSummaryDescriptions[locale]
+  const localizedOptimizationSummaries = useMemo(
+    () =>
+      optimizationSummaries.map((summary) => ({
+        ...summary,
+        description: optimizationDescriptionOverrides[summary.strategy] ?? summary.description,
+      })),
+    [optimizationDescriptionOverrides, optimizationSummaries],
+  )
+  const localizedSummary = useMemo(() => {
+    if (!summary) return undefined
+    return {
+      ...summary,
+      description: optimizationDescriptionOverrides[summary.strategy] ?? summary.description,
+    }
+  }, [optimizationDescriptionOverrides, summary])
 
   const availableAssets = useMemo(
     () => portfolio.assets.map(({ asset }) => ({ symbol: asset.symbol, name: asset.name })),
@@ -61,41 +218,69 @@ export default function PortfolioPage() {
   )
 
   const portfolioValue = useMemo(() => totalValue(portfolio), [portfolio])
+  const selectedPortfolioValue = useMemo(
+    () => totalValue(filteredPortfolio),
+    [filteredPortfolio],
+  )
 
   const selectedSummary = useMemo(() => {
-    if (summary) return summary
-    return optimizationSummaries.find((item) => item.strategy === selectedStrategy)
-  }, [optimizationSummaries, selectedStrategy, summary])
+    if (localizedSummary) return localizedSummary
+    return localizedOptimizationSummaries.find((item) => item.strategy === selectedStrategy)
+  }, [localizedOptimizationSummaries, localizedSummary, selectedStrategy])
 
   const isUsingOptimizedAllocation = Boolean(selectedSummary?.weights?.length)
 
   const symbolLookup = useMemo(
-    () => new Map(portfolio.assets.map((item) => [item.asset.symbol, item.asset])),
-    [portfolio.assets],
+    () => new Map(filteredAssets.map((item) => [item.asset.symbol, item.asset])),
+    [filteredAssets],
   )
 
   const displayedAllocations = useMemo(() => {
     if (selectedSummary?.weights?.length) {
-      return selectedSummary.weights.map((entry) => {
+      const filteredWeights = selectedSummary.weights.filter((entry) =>
+        selectedSymbols.includes(entry.symbol),
+      )
+      const totalWeight = filteredWeights.reduce((sum, entry) => sum + entry.weight, 0)
+      return filteredWeights.map((entry) => {
         const asset = symbolLookup.get(entry.symbol)
+        const normalizedWeight = totalWeight ? entry.weight / totalWeight : 0
         return {
           symbol: entry.symbol,
           name: ('name' in entry ? entry.name : undefined) ?? asset?.name ?? entry.symbol,
-          weight: entry.weight,
-          value: portfolioValue * entry.weight,
+          weight: normalizedWeight,
+          value: selectedPortfolioValue * normalizedWeight,
           asset,
         }
       })
     }
 
-    return portfolio.assets.map(({ asset, weight, value }) => ({
-      symbol: asset.symbol,
-      name: asset.name,
-      weight,
-      value: value ?? weight * portfolioValue,
-      asset,
-    }))
-  }, [portfolio.assets, portfolioValue, selectedSummary?.weights, symbolLookup])
+    const hasValues = filteredAssets.some((item) => typeof item.value === 'number')
+    const totalWeight = filteredAssets.reduce((sum, item) => {
+      if (hasValues && selectedPortfolioValue > 0) {
+        return sum + (item.value ?? 0) / selectedPortfolioValue
+      }
+      return sum + (item.weight ?? 0)
+    }, 0)
+
+    return filteredAssets.map(({ asset, weight, value }) => {
+      const computedWeight =
+        hasValues && selectedPortfolioValue > 0 ? (value ?? 0) / selectedPortfolioValue : weight
+      const normalizedWeight = totalWeight ? (computedWeight ?? 0) / totalWeight : 0
+      return {
+        symbol: asset.symbol,
+        name: asset.name,
+        weight: normalizedWeight,
+        value: value ?? selectedPortfolioValue * normalizedWeight,
+        asset,
+      }
+    })
+  }, [
+    filteredAssets,
+    selectedPortfolioValue,
+    selectedSummary?.weights,
+    selectedSymbols,
+    symbolLookup,
+  ])
 
   const statusMessage = useMemo(() => {
     if (isLoading) {
@@ -160,6 +345,13 @@ export default function PortfolioPage() {
     trials: locale === 'ja' ? '回数' : 'Trials',
     rebalance: locale === 'ja' ? 'リバランス' : 'Rebalance',
   }
+  const lastUpdatedText = new Date(portfolio.updatedAt).toLocaleString(
+    locale === 'ja' ? 'ja-JP' : 'en-US',
+  )
+  const headerDescription =
+    locale === 'ja'
+      ? `ポートフォリオは ${lastUpdatedText} に最終更新されました。ローカルストレージに保存される個人向け設定を表示しています。`
+      : `Portfolio last updated on ${lastUpdatedText}. Showing your local settings stored in the browser.`
 
   return (
     <div className="relative space-y-10 overflow-hidden">
@@ -173,11 +365,11 @@ export default function PortfolioPage() {
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-indigo-300">
               Portfolio Pulse
             </p>
-            <h1 className="text-4xl font-bold leading-tight md:text-5xl">{portfolio.name}</h1>
+            <h1 className="text-4xl font-bold leading-tight md:text-5xl">
+              {displayPortfolioName}
+            </h1>
             <p className="max-w-2xl text-base text-slate-200">
-              ポートフォリオは{' '}
-              {new Date(portfolio.updatedAt).toLocaleString(locale === 'ja' ? 'ja-JP' : 'en-US')}{' '}
-              に最終更新されました。 ローカルストレージに保存される個人向け設定を表示しています。
+              {headerDescription}
             </p>
             <div className="flex flex-wrap gap-3">
               <span className="inline-flex items-center gap-2 rounded-lg border border-emerald-400/30 bg-emerald-500/20 px-4 py-2 text-sm font-bold text-emerald-200 shadow-lg">
@@ -199,7 +391,7 @@ export default function PortfolioPage() {
                   className="h-2.5 w-2.5 rounded-full bg-fuchsia-400 shadow-lg shadow-fuchsia-500/50"
                   aria-hidden
                 />
-                {portfolio.assets.length} assets
+                {portfolio.assets.length} {text.assetCount}
               </span>
             </div>
           </div>
@@ -209,7 +401,7 @@ export default function PortfolioPage() {
             </div>
             <div className="space-y-1">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-300">
-                Sharpe Ratio
+                {text.sharpeLabel}
               </p>
               <p className="text-base font-bold text-white">
                 {(selectedSummary?.expectedReturn ?? mockPerformanceMetrics.expectedReturn) * 100 >=
@@ -259,43 +451,40 @@ export default function PortfolioPage() {
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard
-          title="ポートフォリオ評価額"
+          title={text.metrics.portfolioValue}
           value={`$${portfolioValue.toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
         />
         <MetricCard
-          title="期待リターン"
+          title={text.metrics.expectedReturn}
           value={`${(mockPerformanceMetrics.expectedReturn * 100).toFixed(1)}%`}
           change={{ value: '+0.3%', trend: 'up' }}
         />
         <MetricCard
-          title="ボラティリティ"
+          title={text.metrics.volatility}
           value={`${(mockPerformanceMetrics.volatility * 100).toFixed(1)}%`}
           change={{ value: '-0.1%', trend: 'down' }}
         />
-        <MetricCard
-          title="シャープレシオ"
-          value={mockPerformanceMetrics.sharpeRatio.toFixed(2)}
-        />
+        <MetricCard title={text.metrics.sharpe} value={mockPerformanceMetrics.sharpeRatio.toFixed(2)} />
       </div>
 
       <SectionCard
-        title="資産配分"
+        title={text.allocation.title}
         description={
           isUsingOptimizedAllocation
             ? `${strategyOptions.find((option) => option.value === selectedStrategy)?.label ??
-            '最適化'
-            } の推奨配分です。`
-            : '現在のポートフォリオに保存されている配分です。'
+            (locale === 'ja' ? '最適化' : 'Optimization')
+            }${text.allocation.descriptionOptimizedSuffix}`
+            : text.allocation.descriptionDefault
         }
       >
         <div className="overflow-hidden rounded-lg border border-slate-700/50">
           <table className="min-w-full divide-y divide-slate-700/50 text-base">
             <thead className="bg-gradient-to-r from-slate-800 to-slate-700 text-white">
               <tr>
-                <th className="px-6 py-4 text-left font-bold">ティッカー</th>
-                <th className="px-6 py-4 text-left font-bold">名称</th>
-                <th className="px-6 py-4 text-right font-bold">配分</th>
-                <th className="px-6 py-4 text-right font-bold">評価額 (USD)</th>
+                <th className="px-6 py-4 text-left font-bold">{text.allocation.table.ticker}</th>
+                <th className="px-6 py-4 text-left font-bold">{text.allocation.table.name}</th>
+                <th className="px-6 py-4 text-right font-bold">{text.allocation.table.weight}</th>
+                <th className="px-6 py-4 text-right font-bold">{text.allocation.table.value}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700/30 bg-slate-800/60">
@@ -327,8 +516,8 @@ export default function PortfolioPage() {
       </SectionCard>
 
       <SectionCard
-        title="最適化シナリオ"
-        description="最大シャープレシオ、最小分散、最大リターンの3つのシナリオを比較します。"
+        title={text.optimization.title}
+        description={text.optimization.description}
         aria-busy={isLoading}
         footer={
           <div className="flex flex-col gap-4 text-xs font-bold text-white">
@@ -345,11 +534,11 @@ export default function PortfolioPage() {
             </p>
             <div className="flex items-center justify-between border-t border-slate-700/50 pt-4">
               <span className="text-slate-300">
-                {locale === 'ja' ? '最終更新' : 'Last updated'}:{' '}
+                {text.optimization.lastUpdated}:{' '}
                 {new Date().toLocaleTimeString()}
               </span>
               <button className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-indigo-900/40 transition hover:bg-indigo-500">
-                {locale === 'ja' ? 'レポートをエクスポート' : 'Export Report'}
+                {t('report.export')}
               </button>
             </div>
           </div>
@@ -358,7 +547,7 @@ export default function PortfolioPage() {
         <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
           <div className="w-full max-w-xs space-y-4">
             <label className="flex flex-col gap-2 text-xs font-semibold uppercase tracking-wide text-slate-200">
-              最適化戦略を選択
+              {text.optimization.strategyLabel}
               <select
                 value={selectedStrategy}
                 onChange={(event) =>
@@ -381,24 +570,24 @@ export default function PortfolioPage() {
               <div className="rounded-lg border bg-primary/10 p-4 text-sm">
                 <p className="text-sm font-semibold text-white">
                   {strategyOptions.find((option) => option.value === selectedStrategy)?.label ??
-                    '戦略'}
-                  の概要
+                    (locale === 'ja' ? '戦略' : 'Strategy')}
+                  {text.optimization.summaryTitleSuffix}
                 </p>
                 <dl className="mt-3 space-y-2 text-xs text-slate-200">
                   <div className="flex items-center justify-between">
-                    <dt>期待リターン</dt>
+                    <dt>{locale === 'ja' ? '期待リターン' : 'Expected Return'}</dt>
                     <dd className="font-semibold text-white">
                       {(selectedSummary.expectedReturn * 100).toFixed(1)}%
                     </dd>
                   </div>
                   <div className="flex items-center justify-between">
-                    <dt>ボラティリティ</dt>
+                    <dt>{locale === 'ja' ? 'ボラティリティ' : 'Volatility'}</dt>
                     <dd className="font-semibold text-white">
                       {(selectedSummary.risk * 100).toFixed(1)}%
                     </dd>
                   </div>
                   <div className="flex items-center justify-between">
-                    <dt>シャープレシオ</dt>
+                    <dt>{text.metrics.sharpe}</dt>
                     <dd className="font-semibold text-white">
                       {selectedSummary.sharpeRatio.toFixed(2)}
                     </dd>
@@ -412,13 +601,13 @@ export default function PortfolioPage() {
               </div>
             ) : (
               <div className="rounded-lg border border-dashed border-muted p-4 text-xs text-slate-200">
-                選択した戦略のデータが見つかりません。別の戦略をお試しください。
+                {text.optimization.missing}
               </div>
             )}
           </div>
 
           <div className="grid flex-1 gap-4 md:grid-cols-2">
-            {optimizationSummaries.map((scenario) => {
+            {localizedOptimizationSummaries.map((scenario) => {
               const isActive = scenario.strategy === selectedStrategy
 
               return (
@@ -450,7 +639,9 @@ export default function PortfolioPage() {
                     </p>
                   </div>
                   <div className="flex items-center justify-between">
-                    <dt className="text-[10px] font-bold uppercase tracking-wider text-indigo-300">シャープレシオ</dt>
+                    <dt className="text-[10px] font-bold uppercase tracking-wider text-indigo-300">
+                      {text.metrics.sharpe}
+                    </dt>
                     <dd className="font-medium text-white">
                       {scenario.sharpeRatio.toFixed(2)}
                     </dd>
@@ -466,33 +657,29 @@ export default function PortfolioPage() {
       </SectionCard>
 
       <SectionCard
-        title="設定概要"
-        description="リバランス頻度や配当再投資など、ポートフォリオの基本設定です。設定画面で編集可能になる予定です。"
+        title={text.settings.title}
+        description={text.settings.description}
       >
         <dl className="grid gap-4 text-sm sm:grid-cols-2">
           <div>
-            <dt className="font-bold text-indigo-300">対数リターン</dt>
+            <dt className="font-bold text-indigo-300">{text.settings.logReturns}</dt>
             <dd className="text-white">
-              {portfolio.settings.useLogReturns ? '使用する' : '使用しない'}
+              {portfolio.settings.useLogReturns
+                ? text.settings.logReturnsEnabled
+                : text.settings.logReturnsDisabled}
             </dd>
           </div>
           <div>
-            <dt className="font-bold text-indigo-300">
-              {locale === 'ja' ? '通貨' : 'Currency'}
-            </dt>
+            <dt className="font-bold text-indigo-300">{text.settings.currency}</dt>
             <dd className="text-white">{portfolio.baseCurrency}</dd>
           </div>
           <div>
-            <dt className="font-bold text-indigo-300">
-              {locale === 'ja' ? 'リバランス' : 'Rebalance'}
-            </dt>
-            <dd className="text-white">{locale === 'ja' ? '四半期ごと' : 'Quarterly'}</dd>
+            <dt className="font-bold text-indigo-300">{text.settings.rebalance}</dt>
+            <dd className="text-white">{text.settings.rebalanceValue}</dd>
           </div>
           <div>
-            <dt className="font-bold text-indigo-300">
-              {locale === 'ja' ? '配当再投資' : 'Dividend Reinvestment'}
-            </dt>
-            <dd className="text-white">{locale === 'ja' ? '有効' : 'Enabled'}</dd>
+            <dt className="font-bold text-indigo-300">{text.settings.dividend}</dt>
+            <dd className="text-white">{text.settings.dividendValue}</dd>
           </div>
         </dl>
       </SectionCard>

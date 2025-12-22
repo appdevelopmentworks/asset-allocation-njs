@@ -5,20 +5,14 @@ import { SectionCard } from '@/components/ui/section-card'
 
 import { useEffect, useMemo, useState } from 'react'
 import { PriceTrendChart } from '@/components/charts/price-trend-chart'
-import { mockActivityLog } from '@/lib/constants/mock-data'
+import { mockActivityLog, mockActivityLogByLocale } from '@/lib/constants/mock-data'
 import { useLocale } from '@/components/providers/locale-provider'
 import { usePortfolio } from '@/components/providers/portfolio-provider'
 import { useMarketData } from '@/lib/hooks/use-market-data'
 
 type RangeValue = '1y' | '3y' | '5y' | '10y' | 'max'
 
-const rangeOptions: Array<{ value: RangeValue; label: string }> = [
-  { value: '1y', label: '1年' },
-  { value: '3y', label: '3年' },
-  { value: '5y', label: '5年' },
-  { value: '10y', label: '10年' },
-  { value: 'max', label: '最大' },
-]
+const rangeOptions: RangeValue[] = ['1y', '3y', '5y', '10y', 'max']
 
 const glassPanel =
   'relative overflow-hidden rounded-xl border border-slate-700/50 bg-gradient-to-br from-slate-800/95 via-slate-850/95 to-slate-900/95 shadow-2xl shadow-black/50 backdrop-blur-sm'
@@ -276,16 +270,16 @@ export default function DashboardHomePage() {
 
     return [
       {
-        title: '年率期待リターン',
+        title: t('dashboard.metrics.expectedReturn'),
         value: formatPercent(assetSummary.expectedReturn),
         change: { value: `YTD ${formattedYtd}`, trend },
       },
       {
-        title: '年間ボラティリティ',
+        title: t('dashboard.metrics.volatility'),
         value: formatPercent(assetSummary.volatility),
       },
       {
-        title: 'シャープレシオ',
+        title: t('dashboard.metrics.sharpe'),
         value:
           assetSummary.sharpeRatio === null
             ? assetPricesLoading
@@ -376,6 +370,7 @@ export default function DashboardHomePage() {
   const comparisonLabel = t('dashboard.price.comparisonLabel')
   const comparisonHelperText = t('dashboard.price.comparisonHelper')
   const comparisonEmptyText = t('dashboard.price.comparisonEmpty')
+  const activityLog = mockActivityLogByLocale[locale] ?? mockActivityLog
 
   return (
     <div className="relative space-y-8 overflow-hidden">
@@ -404,7 +399,7 @@ export default function DashboardHomePage() {
                 </select>
               </label>
               <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wider text-indigo-300">
-                {locale === 'ja' ? 'シンボル入力' : 'Custom Symbol'}
+                {t('dashboard.customSymbol.label')}
                 <div className="flex h-10 items-center gap-2">
                   <input
                     value={customSymbolInput}
@@ -415,7 +410,7 @@ export default function DashboardHomePage() {
                         handleCustomSymbolApply()
                       }
                     }}
-                    placeholder={locale === 'ja' ? '例: AAPL' : 'e.g., AAPL'}
+                    placeholder={t('dashboard.customSymbol.placeholder')}
                     className="h-full w-32 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                   />
                   <button
@@ -423,7 +418,7 @@ export default function DashboardHomePage() {
                     onClick={handleCustomSymbolApply}
                     className="h-full rounded-lg border border-indigo-500 bg-indigo-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:border-indigo-400 hover:bg-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/80"
                   >
-                    {locale === 'ja' ? '適用' : 'Apply'}
+                    {t('dashboard.customSymbol.apply')}
                   </button>
                 </div>
               </label>
@@ -435,8 +430,8 @@ export default function DashboardHomePage() {
                   className="h-10 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                 >
                   {rangeOptions.map((option) => (
-                    <option key={option.value} value={option.value} className="bg-slate-900">
-                      {rangeLabelText(option.value)}
+                    <option key={option} value={option} className="bg-slate-900">
+                      {rangeLabelText(option)}
                     </option>
                   ))}
                 </select>
@@ -515,34 +510,30 @@ export default function DashboardHomePage() {
       </SectionCard>
 
       <SectionCard
-        title="資産スナップショット"
-        description="ポートフォリオ内での役割と主要指標を確認します。"
+        title={t('dashboard.assetSnapshot.title')}
+        description={t('dashboard.assetSnapshot.description')}
       >
         <div className="grid gap-6 lg:grid-cols-[2fr,3fr]">
           <div className="space-y-4">
             <dl className="grid gap-4 text-sm">
               <div>
-                <dt className="font-bold text-indigo-300">
-                  資産名
-                </dt>
+                <dt className="font-bold text-indigo-300">{t('dashboard.assetSnapshot.assetName')}</dt>
                 <dd className="mt-1 font-bold text-white">{assetSummary.name}</dd>
               </div>
               <div>
                 <dt className="font-bold text-indigo-300">
-                  ポートフォリオ配分
+                  {t('dashboard.assetSnapshot.allocation')}
                 </dt>
                 <dd className="mt-1 font-bold text-white">
                   {(allocation * 100).toFixed(1)}%
                 </dd>
               </div>
               <div>
-                <dt className="font-bold text-indigo-300">
-                  年初来リターン
-                </dt>
+                <dt className="font-bold text-indigo-300">{t('dashboard.assetSnapshot.ytd')}</dt>
                 <dd className="mt-1 font-bold text-white">
                   {assetSummary.yearToDate === null
                     ? assetPricesLoading
-                      ? '計算中…'
+                      ? t('dashboard.status.calculating')
                       : 'N/A'
                     : `${(assetSummary.yearToDate * 100).toFixed(1)}%`}
                 </dd>
@@ -560,7 +551,7 @@ export default function DashboardHomePage() {
         description={t('dashboard.activity.description')}
       >
         <ul className="space-y-4">
-          {mockActivityLog.map((item) => (
+          {activityLog.map((item) => (
             <li key={item.title} className="space-y-1">
               <p className="text-xs font-bold uppercase tracking-wider text-indigo-300">
                 {item.date}

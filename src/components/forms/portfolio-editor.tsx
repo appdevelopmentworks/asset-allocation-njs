@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useLocale } from '@/components/providers/locale-provider'
+import { mockPortfolioLabels } from '@/lib/constants/mock-data'
 import type { AssetType, Portfolio } from '@/lib/types'
 
 interface PortfolioEditorProps {
@@ -33,21 +34,40 @@ const assetTypes: AssetType[] = ['stock', 'etf', 'bond', 'commodity', 'crypto', 
 const glassCard =
   'relative overflow-hidden rounded-xl border border-slate-700/60 bg-gradient-to-br from-slate-800 via-slate-850 to-slate-900 shadow-2xl shadow-black/50 text-white'
 
+const getLocalizedPortfolioDefaults = (portfolio: Portfolio, locale: 'ja' | 'en') => {
+  const nameMatches =
+    portfolio.name === mockPortfolioLabels.ja.name || portfolio.name === mockPortfolioLabels.en.name
+  const description = portfolio.description ?? ''
+  const descriptionMatches =
+    description === mockPortfolioLabels.ja.description ||
+    description === mockPortfolioLabels.en.description
+
+  return {
+    name: nameMatches ? mockPortfolioLabels[locale].name : portfolio.name,
+    description: descriptionMatches ? mockPortfolioLabels[locale].description : description,
+  }
+}
+
 export function PortfolioEditor({ portfolio, onSave, onReset }: PortfolioEditorProps) {
   const { locale } = useLocale()
-  const [name, setName] = useState(portfolio.name)
-  const [description, setDescription] = useState(portfolio.description ?? '')
+  const localizedDefaults = useMemo(
+    () => getLocalizedPortfolioDefaults(portfolio, locale),
+    [portfolio, locale],
+  )
+  const [name, setName] = useState(localizedDefaults.name)
+  const [description, setDescription] = useState(localizedDefaults.description)
   const [baseCurrency, setBaseCurrency] = useState(portfolio.baseCurrency ?? 'USD')
   const [assets, setAssets] = useState<DraftAsset[]>(createDraftAssets(portfolio))
   const [status, setStatus] = useState<string | null>(null)
 
   useEffect(() => {
-    setName(portfolio.name)
-    setDescription(portfolio.description ?? '')
+    const nextDefaults = getLocalizedPortfolioDefaults(portfolio, locale)
+    setName(nextDefaults.name)
+    setDescription(nextDefaults.description)
     setBaseCurrency(portfolio.baseCurrency ?? 'USD')
     setAssets(createDraftAssets(portfolio))
     setStatus(null)
-  }, [portfolio])
+  }, [portfolio, locale])
 
   const totalWeight = useMemo(
     () => assets.reduce((sum, asset) => sum + Math.max(asset.weight, 0), 0),

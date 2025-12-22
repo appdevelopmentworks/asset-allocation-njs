@@ -17,19 +17,28 @@ import type { Portfolio, SimulationSettings } from '@/lib/types'
 
 const stressTestScenarios = [
   {
-    title: '金利 100bp 上昇',
+    title: { ja: '金利 100bp 上昇', en: 'Rates +100bp' },
     impact: '-3.1%',
-    note: '債券と高PER株が下落。ゴールドが一部ヘッジ。',
+    note: {
+      ja: '債券と高PER株が下落。ゴールドが一部ヘッジ。',
+      en: 'Bonds and growth stocks dip; gold hedges some impact.',
+    },
   },
   {
-    title: '株式市場 -10%',
+    title: { ja: '株式市場 -10%', en: 'Equities -10%' },
     impact: '-6.5%',
-    note: 'ディフェンシブ資産が下支え。暗号資産が追加ダメージ。',
+    note: {
+      ja: 'ディフェンシブ資産が下支え。暗号資産が追加ダメージ。',
+      en: 'Defensive assets cushion the fall; crypto adds drag.',
+    },
   },
   {
-    title: 'ドル円 +5%',
+    title: { ja: 'ドル円 +5%', en: 'USD/JPY +5%' },
     impact: '+1.8%',
-    note: 'ドル建て資産の評価益。為替ヘッジが機能。',
+    note: {
+      ja: 'ドル建て資産の評価益。為替ヘッジが機能。',
+      en: 'USD-denominated assets gain; FX hedge contributes.',
+    },
   },
 ]
 
@@ -122,13 +131,53 @@ function generateBacktestSeries(
 }
 
 export default function AnalysisPage() {
-  const { t } = useLocale()
+  const { t, locale } = useLocale()
   const { portfolio, simulation } = usePortfolio()
+  const text =
+    locale === 'ja'
+      ? {
+          title: '高度分析',
+          description:
+            'リスク・リターンの詳細分析、ストレステスト、バックテスト結果などを集約するページです。現時点ではモック指標を表示しています。',
+          riskTitle: 'リスク指標',
+          riskDescription:
+            'VaR、CVaR、最大ドローダウンなど、ポートフォリオのリスク特性を表す主要指標です。',
+          stressTitle: 'ストレステストシナリオ',
+          stressDescription:
+            '市場ショックに対するポートフォリオ影響をシミュレーションします。後続の実装で Monte Carlo やヒストリカルシナリオに置き換えます。',
+          backtestTitle: 'バックテスト (プレースホルダー)',
+        }
+      : {
+          title: 'Advanced Analysis',
+          description:
+            'Detailed risk/return analysis, stress tests, and backtest results in one place. Mock indicators are shown for now.',
+          riskTitle: 'Risk Metrics',
+          riskDescription:
+            'Key risk metrics including VaR, CVaR, and maximum drawdown.',
+          stressTitle: 'Stress Test Scenarios',
+          stressDescription:
+            'Simulate portfolio impact under market shocks. This will be replaced with Monte Carlo or historical scenarios.',
+          backtestTitle: 'Backtest (Placeholder)',
+        }
+  const riskMetrics = useMemo(() => {
+    if (locale === 'ja') return mockRiskMetrics
+    const labelMap: Record<string, string> = {
+      '最大ドローダウン': 'Max Drawdown',
+      'ベータ (S&P500)': 'Beta (S&P 500)',
+    }
+    return mockRiskMetrics.map((metric) => ({
+      ...metric,
+      label: labelMap[metric.label] ?? metric.label,
+    }))
+  }, [locale])
+  const selectedSymbols = useMemo(() => {
+    const availableSymbols = portfolio.assets.map(({ asset }) => asset.symbol)
+    const filtered = simulation.assets.filter((symbol) => availableSymbols.includes(symbol))
+    return filtered.length ? filtered : availableSymbols
+  }, [portfolio.assets, simulation.assets])
 
   const correlation = useMemo(() => {
-    const symbols = portfolio.assets.length
-      ? portfolio.assets.map(({ asset }) => asset.symbol)
-      : mockCorrelationMatrix.symbols
+    const symbols = selectedSymbols.length ? selectedSymbols : mockCorrelationMatrix.symbols
 
     const lookup = (symbolA: string, symbolB: string) => {
       const indexA = mockCorrelationMatrix.symbols.indexOf(symbolA)
@@ -145,7 +194,7 @@ export default function AnalysisPage() {
       symbols,
       matrix,
     }
-  }, [portfolio.assets])
+  }, [selectedSymbols])
 
   const backtestSeries = useMemo(() => {
     return generateBacktestSeries(portfolio, simulation)
@@ -153,10 +202,8 @@ export default function AnalysisPage() {
   return (
     <div className="space-y-8">
       <header className="space-y-2">
-        <h1 className="text-3xl font-semibold">高度分析</h1>
-        <p className="text-sm text-muted-foreground">
-          リスク・リターンの詳細分析、ストレステスト、バックテスト結果などを集約するページです。現時点ではモック指標を表示しています。
-        </p>
+        <h1 className="text-3xl font-semibold">{text.title}</h1>
+        <p className="text-sm text-muted-foreground">{text.description}</p>
       </header>
 
       <SectionCard
@@ -178,11 +225,11 @@ export default function AnalysisPage() {
       </SectionCard>
 
       <SectionCard
-        title="リスク指標"
-        description="VaR、CVaR、最大ドローダウンなど、ポートフォリオのリスク特性を表す主要指標です。"
+        title={text.riskTitle}
+        description={text.riskDescription}
       >
         <dl className="grid gap-4 sm:grid-cols-2">
-          {mockRiskMetrics.map((metric) => (
+          {riskMetrics.map((metric) => (
             <div key={metric.label} className="rounded-lg border bg-background/70 p-4">
               <dt className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 {metric.label}
@@ -194,24 +241,26 @@ export default function AnalysisPage() {
       </SectionCard>
 
       <SectionCard
-        title="ストレステストシナリオ"
-        description="市場ショックに対するポートフォリオ影響をシミュレーションします。後続の実装で Monte Carlo やヒストリカルシナリオに置き換えます。"
+        title={text.stressTitle}
+        description={text.stressDescription}
       >
         <ul className="space-y-4">
           {stressTestScenarios.map((scenario) => (
-            <li key={scenario.title} className="rounded-lg border bg-background/60 p-4">
+            <li key={scenario.title.en} className="rounded-lg border bg-background/60 p-4">
               <div className="flex items-baseline justify-between">
-                <p className="text-sm font-semibold text-foreground">{scenario.title}</p>
+                <p className="text-sm font-semibold text-foreground">
+                  {scenario.title[locale]}
+                </p>
                 <span className="text-sm font-semibold text-rose-500">{scenario.impact}</span>
               </div>
-              <p className="mt-2 text-xs text-muted-foreground">{scenario.note}</p>
+              <p className="mt-2 text-xs text-muted-foreground">{scenario.note[locale]}</p>
             </li>
           ))}
         </ul>
       </SectionCard>
 
       <SectionCard
-        title="バックテスト (プレースホルダー)"
+        title={text.backtestTitle}
         description={t('analysis.backtest.placeholder')}
       >
         <div className="h-72">

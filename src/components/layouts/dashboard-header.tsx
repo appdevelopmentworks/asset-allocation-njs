@@ -9,7 +9,7 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ onToggleSidebar, isSidebarOpen }: DashboardHeaderProps) {
-  const { t, toggleLocale } = useLocale()
+  const { locale, t, toggleLocale } = useLocale()
 
   return (
     <header className="border-b bg-card/60">
@@ -39,21 +39,12 @@ export function DashboardHeader({ onToggleSidebar, isSidebarOpen }: DashboardHea
             </svg>
           </button>
           <Link href="/" className="text-lg font-semibold">
-            Asset Allocation Tool
+            {locale === 'ja' ? '資産配分ツール' : 'Asset Allocation Tool'}
           </Link>
         </div>
         <div className="flex items-center gap-3 text-xs text-muted-foreground sm:text-sm">
-          <span className="hidden sm:inline">{t('header.docs')}:</span>
-          <Link href="/docs/getting-started" className="underline-offset-4 hover:underline">
-            Getting Started
-          </Link>
-          <span className="hidden sm:inline">/</span>
-          <Link href="/docs/design" className="underline-offset-4 hover:underline">
-            Design
-          </Link>
-          <span className="hidden sm:inline">/</span>
-          <Link href="/docs/requirements" className="underline-offset-4 hover:underline">
-            Requirements
+          <Link href="/manual#dashboard-manual" className="underline-offset-4 hover:underline">
+            {t('header.manual')}
           </Link>
           <button
             type="button"

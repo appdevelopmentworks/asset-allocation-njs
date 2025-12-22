@@ -1,9 +1,20 @@
 import type { Portfolio } from '@/lib/types'
 
+export const mockPortfolioLabels = {
+  ja: {
+    name: 'グロース＋コモディティ',
+    description: '株式・債券・コモディティを組み合わせた分散ポートフォリオ',
+  },
+  en: {
+    name: 'Growth + Commodities',
+    description: 'A diversified portfolio blending equities, bonds, and commodities.',
+  },
+}
+
 export const mockPortfolio: Portfolio = {
   id: 'portfolio-001',
-  name: 'グロース＋コモディティ',
-  description: '株式・債券・コモディティを組み合わせた分散ポートフォリオ',
+  name: mockPortfolioLabels.ja.name,
+  description: mockPortfolioLabels.ja.description,
   baseCurrency: 'USD',
   createdAt: '2024-12-01T10:00:00.000Z',
   updatedAt: '2024-12-12T09:30:00.000Z',
@@ -216,6 +227,48 @@ export const mockActivityLog = [
     description: '10 年間のリバランス戦略バックテストを実行しました。',
   },
 ]
+
+export const mockActivityLogByLocale = {
+  ja: mockActivityLog,
+  en: [
+    {
+      date: '2024-12-12',
+      title: 'Optimized portfolio “Growth + Commodities”',
+      description: 'Recomputed for max Sharpe and raised equity weight by 5%.',
+    },
+    {
+      date: '2024-12-10',
+      title: 'Risk alert',
+      description: 'Crypto correlation exceeded 0.65. Rebalance recommended.',
+    },
+    {
+      date: '2024-12-08',
+      title: 'Backtest complete',
+      description: 'Ran a 10-year rebalance strategy backtest.',
+    },
+  ],
+}
+
+export const mockOptimizationSummaryDescriptions = {
+  ja: {
+    max_sharpe:
+      'リスクに対するリターン効率を最大化。株式とコモディティのバランスが最適化されました。',
+    min_variance:
+      '安定性重視の低ボラティリティ構成。債券と金の比率を増やし、防御力を高めています。',
+    max_return:
+      '期待リターン最大化。暗号資産と株式の比率が高く、ハイリスク・ハイリターン戦略です。',
+    risk_parity: 'リスク寄与度を均等化し、資産クラス間のボラティリティをバランスさせる戦略です。',
+  },
+  en: {
+    max_sharpe:
+      'Maximizes risk-adjusted returns with a balanced mix of equities and commodities.',
+    min_variance:
+      'Low-volatility, stability-first mix with higher bond and gold allocation.',
+    max_return:
+      'Targets the highest expected return with a higher share of crypto and equities.',
+    risk_parity: 'Balances risk contributions across asset classes to equalize volatility.',
+  },
+}
 
 export const mockOptimizationSummaries = [
   {

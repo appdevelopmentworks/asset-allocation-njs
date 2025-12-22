@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { defaultLocale, getDictionary, type Locale } from '@/lib/i18n/dictionaries'
 
 interface LocaleContextValue {
@@ -12,8 +12,24 @@ interface LocaleContextValue {
 
 const LocaleContext = createContext<LocaleContextValue | null>(null)
 
+const LOCALE_STORAGE_KEY = 'asset-allocation:locale'
+
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocale] = useState<Locale>(defaultLocale)
+  const [locale, setLocale] = useState<Locale>(() => {
+    if (typeof window === 'undefined') {
+      return defaultLocale
+    }
+    const stored = window.localStorage.getItem(LOCALE_STORAGE_KEY)
+    if (stored === 'ja' || stored === 'en') {
+      return stored
+    }
+    return defaultLocale
+  })
+
+  useEffect(() => {
+    window.localStorage.setItem(LOCALE_STORAGE_KEY, locale)
+    document.documentElement.lang = locale
+  }, [locale])
 
   const dictionary = useMemo(() => getDictionary(locale), [locale])
 
