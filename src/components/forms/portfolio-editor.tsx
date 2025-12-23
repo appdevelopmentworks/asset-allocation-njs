@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useLocale } from '@/components/providers/locale-provider'
 import { mockPortfolioLabels } from '@/lib/constants/mock-data'
 import type { AssetType, Portfolio } from '@/lib/types'
+import { normalizeSymbol } from '@/lib/utils/symbols'
 
 interface PortfolioEditorProps {
   portfolio: Portfolio
@@ -146,7 +147,7 @@ export function PortfolioEditor({ portfolio, onSave, onReset }: PortfolioEditorP
 
     const normalizedAssets = filtered.map((asset) => ({
       ...asset,
-      symbol: asset.symbol.toUpperCase(),
+      symbol: normalizeSymbol(asset.symbol),
       weight: asset.weight < 0 ? 0 : asset.weight,
     }))
 

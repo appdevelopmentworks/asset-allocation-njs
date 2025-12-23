@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto'
 import { mockPortfolio } from '@/lib/constants/mock-data'
 import type { Portfolio, PortfolioAsset } from '@/lib/types'
+import { normalizeSymbol } from '@/lib/utils/symbols'
 import type { CreatePortfolioInput, UpdatePortfolioInput } from '@/lib/validations/portfolio'
 
 const store = new Map<string, Portfolio>()
@@ -14,8 +15,8 @@ function toPortfolioAsset(asset: CreatePortfolioInput['assets'][number]): Portfo
   return {
     asset: {
       id: randomUUID(),
-      symbol: asset.symbol.toUpperCase(),
-      name: asset.symbol.toUpperCase(),
+      symbol: normalizeSymbol(asset.symbol),
+      name: normalizeSymbol(asset.symbol),
       type: 'etf',
     },
     weight: asset.weight,

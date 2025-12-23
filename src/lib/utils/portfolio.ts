@@ -1,4 +1,5 @@
 import type { Portfolio } from '@/lib/types'
+import { normalizeSymbol } from '@/lib/utils/symbols'
 
 export type PortfolioLike = Partial<Portfolio> & {
   assets?: Array<Partial<Portfolio['assets'][number]>>
@@ -38,7 +39,7 @@ const sanitizeAsset = (
   if (!instrument || typeof instrument.symbol !== 'string') {
     return null
   }
-  const symbol = instrument.symbol.trim().toUpperCase()
+  const symbol = normalizeSymbol(instrument.symbol)
   if (!symbol) {
     return null
   }

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { fetchHistoricalPrices } from '@/lib/api/market'
+import { normalizeSymbol } from '@/lib/utils/symbols'
 
 const DEFAULT_RANGE = '3y'
 const DEFAULT_INTERVAL = '1d'
@@ -35,7 +36,7 @@ export async function GET(request: Request) {
     new Set(
       symbolsParam
         .split(',')
-        .map((item) => item.trim())
+        .map((item) => normalizeSymbol(item))
         .filter((item) => item.length > 0),
     ),
   )

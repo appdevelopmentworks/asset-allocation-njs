@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { fetchHistoricalPrices } from '@/lib/api/market'
+import { normalizeSymbol } from '@/lib/utils/symbols'
 
 const DEFAULT_RANGE = '3y'
 const DEFAULT_INTERVAL = '1d'
@@ -22,10 +23,11 @@ export async function GET(request: NextRequest, context: RouteContext) {
   }
 
   try {
-    const data = await fetchHistoricalPrices({ symbol: params.symbol, range, interval })
+    const symbol = normalizeSymbol(params.symbol)
+    const data = await fetchHistoricalPrices({ symbol, range, interval })
 
     return NextResponse.json({
-      symbol: params.symbol,
+      symbol,
       range,
       interval,
       count: data.length,
