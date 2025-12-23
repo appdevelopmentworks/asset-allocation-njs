@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocale } from '@/components/providers/locale-provider'
 import { mockPortfolioLabels } from '@/lib/constants/mock-data'
 import type { AssetType, Portfolio } from '@/lib/types'
@@ -60,6 +60,7 @@ export function PortfolioEditor({ portfolio, onSave, onReset }: PortfolioEditorP
   const [baseCurrency, setBaseCurrency] = useState(portfolio.baseCurrency ?? 'USD')
   const [assets, setAssets] = useState<DraftAsset[]>(createDraftAssets(portfolio))
   const [status, setStatus] = useState<string | null>(null)
+  const nameFetchTimers = useRef(new Map<string, ReturnType<typeof setTimeout>>())
 
   useEffect(() => {
     const nextDefaults = getLocalizedPortfolioDefaults(portfolio, locale)
@@ -69,6 +70,13 @@ export function PortfolioEditor({ portfolio, onSave, onReset }: PortfolioEditorP
     setAssets(createDraftAssets(portfolio))
     setStatus(null)
   }, [portfolio, locale])
+
+  useEffect(() => {
+    return () => {
+      nameFetchTimers.current.forEach((timer) => clearTimeout(timer))
+      nameFetchTimers.current.clear()
+    }
+  }, [])
 
   const totalWeight = useMemo(
     () => assets.reduce((sum, asset) => sum + Math.max(asset.weight, 0), 0),
@@ -121,6 +129,67 @@ export function PortfolioEditor({ portfolio, onSave, onReset }: PortfolioEditorP
 
   const updateAsset = (id: string, patch: Partial<DraftAsset>) => {
     setAssets((prev) => prev.map((asset) => (asset.id === id ? { ...asset, ...patch } : asset)))
+  }
+
+  const resolveAssetName = async (id: string, rawSymbol: string) => {
+    const symbol = normalizeSymbol(rawSymbol)
+    if (!symbol) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/assets/search?query=${encodeURIComponent(symbol)}`)
+      if (!response.ok) {
+        return
+      }
+      const data = (await response.json()) as {
+        results?: Array<{
+          symbol?: string
+          shortname?: string
+          longname?: string
+        }>
+      }
+      const results = Array.isArray(data.results) ? data.results : []
+      const matched =
+        results.find((item) => item.symbol && normalizeSymbol(item.symbol) === symbol) ?? results[0]
+      const resolvedName = matched?.longname || matched?.shortname
+
+      if (resolvedName) {
+        setAssets((prev) =>
+          prev.map((asset) =>
+            asset.id === id
+              ? (() => {
+                  const shouldOverwrite =
+                    !asset.name.trim() ||
+                    asset.name.trim().toUpperCase() === asset.symbol.trim().toUpperCase()
+                  return {
+                    ...asset,
+                    symbol,
+                    name: shouldOverwrite ? resolvedName : asset.name,
+                  }
+                })()
+              : asset,
+          ),
+        )
+      }
+    } catch (error) {
+      console.error('[portfolio-editor] failed to resolve asset name', error)
+    }
+  }
+
+  const handleSymbolChange = (id: string, value: string) => {
+    updateAsset(id, { symbol: value })
+
+    const existingTimer = nameFetchTimers.current.get(id)
+    if (existingTimer) {
+      clearTimeout(existingTimer)
+    }
+
+    const nextTimer = setTimeout(() => {
+      resolveAssetName(id, value)
+    }, 400)
+
+    nameFetchTimers.current.set(id, nextTimer)
   }
 
   const addAsset = () => {
@@ -259,7 +328,7 @@ export function PortfolioEditor({ portfolio, onSave, onReset }: PortfolioEditorP
                   <td className="px-4 py-3">
                     <input
                       value={asset.symbol}
-                      onChange={(event) => updateAsset(asset.id, { symbol: event.target.value })}
+                      onChange={(event) => handleSymbolChange(asset.id, event.target.value)}
                       className="w-full rounded-lg border border-slate-700/50 bg-slate-800/60 px-2 py-1 text-sm font-bold text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                     />
                   </td>

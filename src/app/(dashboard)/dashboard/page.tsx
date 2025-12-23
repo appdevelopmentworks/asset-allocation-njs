@@ -9,6 +9,7 @@ import { mockActivityLog, mockActivityLogByLocale } from '@/lib/constants/mock-d
 import { useLocale } from '@/components/providers/locale-provider'
 import { usePortfolio } from '@/components/providers/portfolio-provider'
 import { useMarketData } from '@/lib/hooks/use-market-data'
+import { normalizeSymbol } from '@/lib/utils/symbols'
 
 type RangeValue = '1y' | '3y' | '5y' | '10y' | 'max'
 
@@ -29,6 +30,8 @@ export default function DashboardHomePage() {
   const [isComparisonMode, setIsComparisonMode] = useState(false)
   const [selectedComparisons, setSelectedComparisons] = useState<string[]>([])
   const [customSymbolInput, setCustomSymbolInput] = useState('')
+  const [customAssetName, setCustomAssetName] = useState<string | null>(null)
+  const [customAssetSymbol, setCustomAssetSymbol] = useState<string | null>(null)
 
   const assetOptions = useMemo(() => {
     const baseOptions = portfolio.assets.map(({ asset }) => ({
@@ -93,15 +96,49 @@ export default function DashboardHomePage() {
     )
   }
 
-  const handleCustomSymbolApply = () => {
+  const handleCustomSymbolApply = async () => {
     const next = customSymbolInput.trim()
     if (!next) {
       return
     }
 
-    setSelectedAsset(next.toUpperCase())
+    const normalized = normalizeSymbol(next)
+    setCustomAssetSymbol(normalized)
+    setCustomAssetName(null)
+    setSelectedAsset(normalized)
     setIsComparisonMode(false)
     setSelectedComparisons([])
+
+    try {
+      const response = await fetch(`/api/assets/search?query=${encodeURIComponent(normalized)}`)
+      if (!response.ok) {
+        return
+      }
+      const data = (await response.json()) as {
+        results?: Array<{
+          symbol?: string
+          shortname?: string
+          longname?: string
+        }>
+      }
+      const results = Array.isArray(data.results) ? data.results : []
+      const matched =
+        results.find((item) => item.symbol && normalizeSymbol(item.symbol) === normalized) ??
+        results[0]
+      const resolvedName = matched?.longname || matched?.shortname
+
+      setCustomAssetName(resolvedName ?? null)
+    } catch (error) {
+      console.error('[dashboard] failed to resolve custom symbol name', error)
+    }
+  }
+
+  const handleAssetChange = (nextSymbol: string) => {
+    setSelectedAsset(nextSymbol)
+    if (assetOptions.some((option) => option.symbol === nextSymbol)) {
+      setCustomAssetSymbol(null)
+      setCustomAssetName(null)
+    }
   }
 
   const selectedAssetEntry = useMemo(
@@ -187,7 +224,10 @@ export default function DashboardHomePage() {
 
     if (assetPricesLoading) {
       return {
-        name: selectedAssetEntry?.asset.name ?? chartSymbol,
+        name:
+          selectedAssetEntry?.asset.name ??
+          (customAssetSymbol === chartSymbol ? customAssetName : null) ??
+          chartSymbol,
         allocation,
         expectedReturn: null,
         volatility: null,
@@ -202,7 +242,10 @@ export default function DashboardHomePage() {
 
     if (assetPricesError || !assetMetrics) {
       return {
-        name: selectedAssetEntry?.asset.name ?? chartSymbol,
+        name:
+          selectedAssetEntry?.asset.name ??
+          (customAssetSymbol === chartSymbol ? customAssetName : null) ??
+          chartSymbol,
         allocation,
         expectedReturn: null,
         volatility: null,
@@ -220,7 +263,10 @@ export default function DashboardHomePage() {
     }
 
     return {
-      name: selectedAssetEntry?.asset.name ?? chartSymbol,
+      name:
+        selectedAssetEntry?.asset.name ??
+        (customAssetSymbol === chartSymbol ? customAssetName : null) ??
+        chartSymbol,
       allocation,
       expectedReturn: assetMetrics.cagr,
       volatility: assetMetrics.volatility,
@@ -236,6 +282,8 @@ export default function DashboardHomePage() {
     assetPricesError,
     assetPricesLoading,
     chartSymbol,
+    customAssetName,
+    customAssetSymbol,
     locale,
     selectedAssetEntry,
   ])
@@ -360,8 +408,16 @@ export default function DashboardHomePage() {
     return [chartSymbol, ...extras]
   }, [chartSymbol, isComparisonMode, selectedComparisons])
 
-  const symbolLabel = (symbol: string) =>
-    assetOptions.find((option) => option.symbol === symbol)?.label || symbol
+  const symbolLabel = (symbol: string) => {
+    const option = assetOptions.find((item) => item.symbol === symbol)
+    if (option) {
+      return option.label
+    }
+    if (customAssetSymbol === symbol && customAssetName) {
+      return `${symbol} ・ ${customAssetName}`
+    }
+    return symbol
+  }
 
   const comparisonLabels = comparisonSymbols.map(symbolLabel)
   const chartContextLabel = comparisonLabels.join(locale === 'ja' ? '／' : ' / ')
@@ -388,7 +444,7 @@ export default function DashboardHomePage() {
                 {assetSelectorLabel}
                 <select
                   value={selectedAsset}
-                  onChange={(event) => setSelectedAsset(event.target.value)}
+                  onChange={(event) => handleAssetChange(event.target.value)}
                   className="h-10 w-72 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                 >
                   {assetOptions.map((option) => (
