@@ -11,7 +11,7 @@ const dictionaries: Record<Locale, Record<string, string>> = {
     'nav.settings': '設定',
     'dashboard.overview.title': 'ダッシュボード概要',
     'dashboard.overview.subtitle':
-      '下記の指標と活動ログはモックデータです。Yahoo Finance データ連携と最適化処理が整い次第、リアルタイム値に差し替えます。',
+      '下記の指標は Yahoo Finance の市場データから算出しています。『最近のアクティビティ』は現在モックで、実データ連携後に差し替えます。',
     'dashboard.price.description':
       '指定したティッカーの累積リターン推移を可視化します。比較モードで複数資産を重ねられます。',
     'dashboard.price.footer':
@@ -66,7 +66,7 @@ const dictionaries: Record<Locale, Record<string, string>> = {
     'nav.settings': 'Settings',
     'dashboard.overview.title': 'Dashboard Overview',
     'dashboard.overview.subtitle':
-      'The metrics and activity feed below use mock data. Live Yahoo Finance signals and optimization results will replace them soon.',
+      "The metrics below are computed from Yahoo Finance market data. The 'Recent Activity' section is mock data and will be replaced after live integration.",
     'dashboard.price.description':
       'Displays cumulative returns for the selected ticker. Enable comparison mode to overlay multiple assets.',
     'dashboard.price.footer':
